@@ -5,11 +5,40 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <title>Vue Netease Music</title>
     <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      @font-face {
+        font-family: 'icomoon';
+        src:  url('./src/assets/icomoon.eot?9wa297');
+        src:  url('./src/assets/icomoon.eot?9wa297#iefix') format('embedded-opentype'),
+          url('./src/assets/icomoon.ttf?9wa297') format('truetype'),
+          url('./src/assets/icomoon.woff?9wa297') format('woff'),
+          url('./src/assets/icomoon.svg?9wa297#icomoon') format('svg');
+        font-weight: normal;
+        font-style: normal;
+      }
       div#firstPageLoading {
         width: 100vw;
         height: 100vh;
         background-color: #e40d0d;
         color: #e6e2e2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        transition: all .5s ease;
+      }
+      div#firstPageLoading > p {
+        font-size: 2em;
+      }
+      div#firstPageLoading > p:last-of-type {
+        font-size: 1em;
+      }
+      div.firstPageFadeout {
+        opacity: 0;
+        transform: scaleX(1.5) scaleY(1.5);
       }
     </style>
   </head>
