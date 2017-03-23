@@ -23,14 +23,16 @@
 <script>
 import bannerSwipe from './components/bannerSwipe.vue'
 export default {
-  name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: ''
     }
   },
   components: {
     bannerSwipe
+  },
+  mounted () {
+
   }
 }
 </script>
