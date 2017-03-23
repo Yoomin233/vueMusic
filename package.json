@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "hello",
   "description": "A Vue.js project",
   "version": "1.0.0",
@@ -25,4 +26,27 @@
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0"
   }
+=======
+  "name": "vuemusic",
+  "version": "1.0.0",
+  "description": "netease music using vue.js",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/YueminHu/vueMusic.git"
+  },
+  "keywords": [
+    "vue",
+    "webpack"
+  ],
+  "author": "yuemin.hu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YueminHu/vueMusic/issues"
+  },
+  "homepage": "https://github.com/YueminHu/vueMusic#readme"
+>>>>>>> 973a367807a58070014268f3d402594e0633d181
 }
