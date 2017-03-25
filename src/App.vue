@@ -6,7 +6,7 @@
       <span :class='{focus: currentSlider === 0}' @click='switchSlider($event, 0)'>我的</span>
       <span :class='{focus: currentSlider === 1}' @click='switchSlider($event, 1)'>发现</span>
       <span :class='{focus: currentSlider === 2}' @click='switchSlider($event, 2)'>动态</span>
-      <span class='search'></span>
+      <router-link to='/search' tag='span' class='search'></router-link>
     </nav>
     <!-- three components -->
     <section class='threeSlide'>
@@ -25,6 +25,8 @@ import playBar from './components/playBar.vue'
 import mineMusicComponent from './components/mineMusic.vue'
 import discoveryComponent from './components/discovery.vue'
 import activityComponent from './components/activity.vue'
+
+import hideLoader from './tools/hideLoader'
 export default {
   name: 'mainUI',
   data () {
@@ -39,7 +41,7 @@ export default {
     activityComponent
   },
   mounted () {
-    // hideLoader()
+    hideLoader()
   },
   methods: {
     switchSlider (e, num) {

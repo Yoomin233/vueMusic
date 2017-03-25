@@ -5,10 +5,9 @@
 </template>
 
 <script>
-import hideLoader from '../tools/hideLoader'
 export default {
   mounted () {
-    hideLoader()
+    // hideLoader()
   }
 }
 </script>

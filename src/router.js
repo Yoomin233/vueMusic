@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import mainUI from './App.vue'
-
+import searchComponent from './search.vue'
 
 const router = new VueRouter({
   routes: [
@@ -17,6 +17,10 @@ const router = new VueRouter({
       path: '/main',
       component: mainUI,
     },
+    {
+      path: '/search',
+      component: searchComponent
+    }
   ]
 })
 
