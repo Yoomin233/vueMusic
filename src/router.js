@@ -4,6 +4,7 @@ Vue.use(VueRouter)
 
 import mainUI from './App.vue'
 import searchComponent from './search.vue'
+import searchResultComponent from './searchResult.vue'
 
 const router = new VueRouter({
   routes: [
@@ -20,6 +21,10 @@ const router = new VueRouter({
     {
       path: '/search',
       component: searchComponent
+    },
+    {
+      path: './searchResult',
+      component: searchResultComponent
     }
   ]
 })

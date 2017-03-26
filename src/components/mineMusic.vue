@@ -89,7 +89,7 @@ div.musicLists {
         font-size: 1em;
       }
       > p:nth-of-type(2) {
-        font-size: .5em;
+        font-size: .7em;
         color: #666;
       }
     }

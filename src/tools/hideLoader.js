@@ -1,12 +1,15 @@
 export default function () {
   // hide loading page
-  document.querySelector('div#firstPageLoading').addEventListener('transitionend', (e) => {
-    // transitionend event fires for each individual property, in this case, twice(opacity and transform)
-    if (e.propertyName === 'opacity') {
-      e.target.parentElement.removeChild(e.target)
+  let node = document.querySelector('div#firstPageLoading')
+  // debugger
+  if (node) {
+    node.addEventListener('transitionend', function anony (e) {
+      // transitionend event fires for each individual property, in this case, twice(opacity and transform)
+      node.parentElement.removeChild(node)
+      node.removeEventListener('transitionend', anony)
       // console.log('faded@')
-    }
-  })
-  document.querySelector('div#firstPageLoading').classList.add('firstPageFadeout')
-  // end
+    })
+    node.classList.add('firstPageFadeout')
+    // end
+  }
 }
