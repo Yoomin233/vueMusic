@@ -5,9 +5,15 @@
 </template>
 
 <script>
+import config from '../config/config'
 export default {
+  data () {
+    return {
+      musicURL: `${config.musicServer.url}Maroon%205%20-%20Sugar.mp3`
+    }
+  },
   mounted () {
-    // hideLoader()
+
   }
 }
 </script>
@@ -20,4 +26,5 @@ export default {
     bottom: 0;
     width: 100%;
   }
+
 </style>

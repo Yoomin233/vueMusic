@@ -3,30 +3,42 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import mainUI from './App.vue'
+import playing from './playing.vue'
+
 import searchComponent from './search.vue'
 import searchResultComponent from './searchResult.vue'
 
-const router = new VueRouter({
+export default new VueRouter({
   routes: [
     // 默认路由
     {
       path: '/',
-      component: mainUI
+      components: {
+        mainUI,
+        playing
+      }
     },
-    // 一级路由, 用户主界面
+    // 一级路由, 用户主界面 + 播放器
     {
       path: '/main',
-      component: mainUI,
+      components: {
+        mainUI,
+        playing
+      }
     },
     {
       path: '/search',
-      component: searchComponent
+      components: {
+        mainUI: searchComponent,
+        playing
+      }
     },
     {
       path: './searchResult',
-      component: searchResultComponent
+      components: {
+        mainUI: searchResultComponent,
+        playing
+      }
     }
   ]
 })
-
-export default router

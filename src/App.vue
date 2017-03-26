@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="top">
     <!-- navigation -->
     <nav>
       <span class='menu'></span>
@@ -15,7 +15,7 @@
       <activity-component></activity-component>
     </section>
     <!-- play bar -->
-    <play-bar></play-bar>
+    <play-bar keep-alive></play-bar>
   </div>
 </template>
 

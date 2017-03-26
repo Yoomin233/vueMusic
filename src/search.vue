@@ -7,7 +7,7 @@
     <div class='recentSearchList'>
       <p v-for='item in recentSearch'>{{item}}<span @click='deleteRecentSearchItem(item)'>X</span></p>
     </div>
-    <play-bar></play-bar>
+    <play-bar keep-alive></play-bar>
   </div>
 </template>
 <script>
