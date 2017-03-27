@@ -34,7 +34,7 @@ export default new VueRouter({
       }
     },
     {
-      path: './searchResult',
+      path: '/searchResult',
       components: {
         mainUI: searchResultComponent,
         playing

@@ -31,7 +31,7 @@ export default {
         router.push('/searchResult')
       }
     })
-    this.recentSearch = localStorage.get('recentSearch').split(',')
+    this.recentSearch = localStorage.get('recentSearch')&&localStorage.get('recentSearch').split(',')
   },
   methods: {
     deleteRecentSearchItem (item) {
