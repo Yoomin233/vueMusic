@@ -1,4 +1,4 @@
-export default function () {
+var hideLoader =  function () {
   // hide loading page
   let node = document.querySelector('div#firstPageLoading')
   // debugger
@@ -13,3 +13,5 @@ export default function () {
     // end
   }
 }
+
+export default hideLoader

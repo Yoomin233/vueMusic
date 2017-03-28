@@ -2,7 +2,7 @@
   <div class="top">
     <!-- navigation -->
     <nav>
-      <span class='menu'></span>
+      <router-link to='/main/sideBar' tag='span' class='menu'></router-link>
       <span :class='{focus: currentSlider === 0}' @click='switchSlider($event, 0)'>我的</span>
       <span :class='{focus: currentSlider === 1}' @click='switchSlider($event, 1)'>发现</span>
       <span :class='{focus: currentSlider === 2}' @click='switchSlider($event, 2)'>动态</span>
@@ -53,6 +53,8 @@ export default {
       // console.log(to, from)
       if (to.name === 'songList' && (from.name === 'mainUI' || from.name === 'default') || from.name === 'songList') {
         this.transitionName = 'fadeInUp'
+      } else if (to.name === 'sideBar') {
+        this.transitionName = 'slideInRight'
       } else {
         this.transitionName = ''
       }
@@ -113,12 +115,21 @@ export default {
   .fadeInUp-enter-active, .fadeInUp-leave-active, .fadeOutDown-leave-active, .fadeOutDown-enter-active {
     transition: all .3s ease;
   }
+  .slideInRight-enter-active, .slideInRight-leave-avtive {
+    transition: all .3s ease;
+  }
   .fadeInUp-enter{
     opacity: 0;
-    transform: translateY(50%);
+    transform: translate3d(0, 50%, 0);
   }
-  .fadeInUp-leave-to {
+  .fadeInUp-leave-active {
     opacity: 0;
-    transform: translateY(50%);
+    transform: translate3d(0, 50%, 0);
+  }
+  .slideInRight-enter {
+    transform: translate3d(-100%, 0, 0);
+  }
+  .slideInRight-leave-active {
+    transform: translate3d(-100%, 0, 0);
   }
 </style>

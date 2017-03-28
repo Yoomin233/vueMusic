@@ -2,11 +2,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
+// thre parllel components in index.html
 import mainUI from './App.vue'
 import playing from './playing.vue'
 import playBar from './components/playBar.vue'
 
+// sub-route in mainUI
 import songList from './songList.vue'
+import sideBar from './sideBar.vue'
+
 import searchComponent from './search.vue'
 import searchResultComponent from './searchResult.vue'
 
@@ -36,6 +40,11 @@ export default new VueRouter({
           name: 'songList',
           path: 'songList',
           component: songList
+        },
+        {
+          name: 'sideBar',
+          path: 'sideBar',
+          component: sideBar
         }
       ]
     },
