@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="top">
     <div class="list">
-      <p class='list'>我喜欢的</p>
+      <router-link to='/main/songList' tag='p' class='list'>我喜欢的</router-link>
       <p class='list'>最近播放</p>
     </div>
     <div class="musicLists">
@@ -11,7 +11,7 @@
           <img src="https://vuejs.org/images/logo.png" alt="">
         </div>
         <div class="musicListDetails">
-          <p>我喜欢的音乐</p>
+          <router-link to='/main/songList' tag='p'>我喜欢的音乐</router-link>
           <p>144首</p>
         </div>
       </div>

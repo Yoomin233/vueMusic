@@ -1,7 +1,7 @@
 <template>
   <div class='top'>
     <p></p>
-    <audio controls name='media'>
+    <audio controls name='media' v-if='ifAudioTag' @ended='songEnd'>
       <source :src='currentPlaying.src' type='audio/mpeg'/>
     </audio>
   </div>
@@ -9,10 +9,11 @@
 <script>
 import config from './config/config'
 import Store from './Vuex/store'
+import Vue from 'vue'
 export default {
   data () {
     return {
-
+      ifAudioTag: true
     }
   },
   mounted () {
@@ -22,11 +23,19 @@ export default {
     currentPlaying: () => Store.state.currentPlaying,
     musicPlaying: () => Store.state.playingStatus.musicPlaying,
     volume: () => Store.state.playingStatus.volume,
-    songNumber: () => Store.state.playingStatus.songNumber
   },
   watch: {
-    songNumber () {
-      console.log('heh')
+    currentPlaying () {
+      this.ifAudioTag = false
+      Vue.nextTick(() => {
+        this.ifAudioTag = true
+        Vue.nextTick(() => {
+          if (this.musicPlaying) {
+            let audioTag = document.querySelector('audio')
+            audioTag.play()
+          }
+        })
+      })
     },
     musicPlaying (val) {
       let audioTag = document.querySelector('audio')
@@ -51,6 +60,11 @@ export default {
           }
         }, 50)
       }
+    }
+  },
+  methods: {
+    songEnd () {
+      Store.commit('nextSong')
     }
   }
 }

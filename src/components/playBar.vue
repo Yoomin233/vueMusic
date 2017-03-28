@@ -13,6 +13,8 @@
 <script>
 import config from '../config/config'
 import Store from '../Vuex/store'
+import {$} from '../tools/toolsFunction'
+import Vue from 'vue'
 export default {
   data () {
     return {
@@ -32,6 +34,42 @@ export default {
     },
     nextSong () {
       Store.commit('nextSong')
+    }
+  },
+  watch: {
+    currentPlaying () {
+      Vue.nextTick(function () {
+        let elem = $('div.playBar > div.nameAndSinger > p:first-of-type')
+        let elemWidth = parseInt(getComputedStyle(elem).width)
+        let songNameWidth = elem.scrollWidth
+        let diff = songNameWidth - elemWidth
+        if (diff > 1) {
+          // debugger
+          let dir = true
+          setTimeout(function inlineFunc () {
+            // debugger
+            // 滚动
+            if (dir) {
+              elem.scrollLeft ++
+              // 方向转换时停留一秒
+              if (elem.scrollLeft + 1 >= diff) {
+                dir = false
+                setTimeout(inlineFunc, 1e3)
+              } else {
+                setTimeout(inlineFunc, 200)
+              }
+            } else {
+              elem.scrollLeft --
+              if (elem.scrollLeft <= 0) {
+                dir = true
+                setTimeout(inlineFunc, 1e3)
+              } else {
+                setTimeout(inlineFunc, 200)
+              }
+            }
+          }, 200)
+        }
+      })
     }
   }
 }
@@ -60,11 +98,19 @@ export default {
       align-items: flex-start;
       justify-content: center;
       width: 60%;
-      overflow-x: hidden;
+      padding: 0 .2em;
+      box-sizing: border-box;
       p {
         margin: .1em 0;
+        &:first-child {
+          white-space: nowrap;
+          overflow: scroll;
+          pointer-events: none;
+          width: 100%;
+          overflow-x: hidden;
+        }
         &:last-child {
-          font-size: .8em;
+          font-size: .7em;
           color: #777;
         }
       }

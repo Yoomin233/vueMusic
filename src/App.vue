@@ -16,6 +16,9 @@
     </section>
     <!-- play bar -->
     <play-bar keep-alive></play-bar>
+    <transition :name="transitionName">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -31,7 +34,8 @@ export default {
   name: 'mainUI',
   data () {
     return {
-      currentSlider: 0
+      currentSlider: 0,
+      transitionName: ''
     }
   },
   components: {
@@ -46,6 +50,17 @@ export default {
   methods: {
     switchSlider (e, num) {
       this.currentSlider = num
+    }
+  },
+  // 定义主路由过渡动效
+  watch: {
+    '$route' (to, from) {
+      // console.log(to, from)
+      if (to.name === 'songList' && (from.name === 'mainUI' || from.name === 'default')) {
+        this.transitionName = 'fadeInUp'
+      } else {
+        this.transitionName = ''
+      }
     }
   }
 }
@@ -93,5 +108,17 @@ export default {
       flex-shrink: 0;
       transition: all .3s ease;
     }
+  }
+  /*router-view transition styles*/
+  .fadeInUp-enter-active, .fadeInUp-leave-active, .fadeOutDown-leave-active, .fadeOutDown-enter-active {
+    transition: all .3s ease;
+  }
+  .fadeInUp-enter{
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  .fadeInUp-leave-to {
+    opacity: 0;
+    transform: translateY(50%);
   }
 </style>
