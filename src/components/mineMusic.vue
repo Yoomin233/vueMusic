@@ -12,7 +12,7 @@
         </div>
         <div class="musicListDetails">
           <router-link to='/main/songList' tag='p'>我喜欢的音乐</router-link>
-          <p>144首</p>
+          <p>{{songList.length}}首</p>
         </div>
       </div>
     </div>
@@ -20,11 +20,15 @@
 </template>
 
 <script>
+import Store from '../Vuex/store'
 export default {
+  computed: {
+    songList: () => Store.state.playList
+  }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 p.list {
   margin: .5em auto;
   margin-left: 4ch;

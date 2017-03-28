@@ -4,6 +4,7 @@ Vue.use(VueRouter)
 
 import mainUI from './App.vue'
 import playing from './playing.vue'
+import playBar from './components/playBar.vue'
 
 import songList from './songList.vue'
 import searchComponent from './search.vue'
@@ -17,7 +18,8 @@ export default new VueRouter({
       path: '/',
       components: {
         mainUI,
-        playing
+        playing,
+        playBar
       }
     },
     // 一级路由, 用户主界面 + 播放器
@@ -26,7 +28,8 @@ export default new VueRouter({
       path: '/main',
       components: {
         mainUI,
-        playing
+        playing,
+        playBar
       },
       children: [
         {

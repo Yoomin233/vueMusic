@@ -14,8 +14,6 @@
       <discovery-component></discovery-component>
       <activity-component></activity-component>
     </section>
-    <!-- play bar -->
-    <play-bar keep-alive></play-bar>
     <transition :name="transitionName">
       <router-view></router-view>
     </transition>
@@ -23,8 +21,6 @@
 </template>
 
 <script>
-// import bannerSwipe from './components/bannerSwipe.vue'
-import playBar from './components/playBar.vue'
 import mineMusicComponent from './components/mineMusic.vue'
 import discoveryComponent from './components/discovery.vue'
 import activityComponent from './components/activity.vue'
@@ -39,7 +35,6 @@ export default {
     }
   },
   components: {
-    playBar,
     mineMusicComponent,
     discoveryComponent,
     activityComponent
@@ -56,7 +51,7 @@ export default {
   watch: {
     '$route' (to, from) {
       // console.log(to, from)
-      if (to.name === 'songList' && (from.name === 'mainUI' || from.name === 'default')) {
+      if (to.name === 'songList' && (from.name === 'mainUI' || from.name === 'default') || from.name === 'songList') {
         this.transitionName = 'fadeInUp'
       } else {
         this.transitionName = ''
@@ -67,6 +62,11 @@ export default {
 </script>
 
 <style lang='less' scoped>
+  div.top {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
   nav {
     height: 3em;
     background-color: red;

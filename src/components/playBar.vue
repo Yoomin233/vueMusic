@@ -22,7 +22,7 @@ export default {
     }
   },
   mounted () {
-
+    this.scrollSongName()
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
@@ -34,10 +34,8 @@ export default {
     },
     nextSong () {
       Store.commit('nextSong')
-    }
-  },
-  watch: {
-    currentPlaying () {
+    },
+    scrollSongName () {
       Vue.nextTick(function () {
         let elem = $('div.playBar > div.nameAndSinger > p:first-of-type')
         let elemWidth = parseInt(getComputedStyle(elem).width)
@@ -71,6 +69,11 @@ export default {
         }
       })
     }
+  },
+  watch: {
+    currentPlaying () {
+      this.scrollSongName()
+    }
   }
 }
 </script>
@@ -79,7 +82,7 @@ export default {
   div.playBar {
     height: 3em;
     background-color: #ddd;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     overflow: hidden;
@@ -88,6 +91,7 @@ export default {
     background-color: rgba(255, 2552, 255, .8);
     align-items: center;
     box-sizing: border-box;
+    z-index: 12;
     > img {
       width: 2.8em;
       margin-right: .5em;

@@ -7,11 +7,9 @@
     <div class='recentSearchList'>
       <p v-for='item in recentSearch'>{{item}}<span @click='deleteRecentSearchItem(item)'>X</span></p>
     </div>
-    <play-bar keep-alive></play-bar>
   </div>
 </template>
 <script>
-import playBar from './components/playBar.vue'
 import localStorage from './tools/localStorage'
 import router from './router'
 export default {
@@ -21,7 +19,6 @@ export default {
     }
   },
   components: {
-    playBar
   },
   mounted () {
     document.querySelector('div.searchBar > input').focus()
