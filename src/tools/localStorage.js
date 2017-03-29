@@ -21,7 +21,7 @@ function add (key, value) {
   }
 }
 
-export {
+export default {
   add,
   set,
   get

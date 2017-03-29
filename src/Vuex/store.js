@@ -7,10 +7,11 @@ import config from '../config/config'
 const Store = new Vuex.Store({
   state: {
     playingStatus: {
-      musicPlaying: false,
+      musicPlaying: 'paused',
       volume: 1,
       songNumber: 0,
-      mode: 'shuffle'
+      mode: 'shuffle',
+      buffering: true
     },
     currentPlayingList: [],
     playLists: [],
@@ -22,7 +23,15 @@ const Store = new Vuex.Store({
     }
   },
   mutations: {
-    switchPlayStatus: state => state.playingStatus.musicPlaying = !state.playingStatus.musicPlaying,
+    switchPlayStatus: state => {
+      if (state.playingStatus.musicPlaying === 'paused') {
+        state.playingStatus.musicPlaying = 'playing'
+      } else if (state.playingStatus.musicPlaying === 'playing') {
+        state.playingStatus.musicPlaying = 'paused'
+      }
+    },
+    // 缓冲结束
+    canPlay: state => state.playingStatus.buffering = false,
     // '下一首'方法
     nextSong: state => {
       if (state.playingStatus.mode === 'order') {
@@ -40,6 +49,12 @@ const Store = new Vuex.Store({
         state.currentPlaying = state.currentPlayingList[shuffledNo]
       }
       state.currentPlaying.src = `${config.musicServer.url}${state.currentPlaying.filename}`
+      state.playingStatus.buffering = true
+      setTimeout(() => {
+        if (state.playingStatus.buffering) {
+          alert('缓冲超时, 请重试!')
+        }
+      }, 60 * 1e3)
     },
     removeSong: (state, index) => {
       state.currentPlayingList.splice(index, 1)
@@ -55,6 +70,12 @@ const Store = new Vuex.Store({
         singer: state.currentPlayingList[songNumber].singer,
         songName: state.currentPlayingList[songNumber].songName
       }
+      state.playingStatus.buffering = true
+      setTimeout(() => {
+        if (state.playingStatus.buffering) {
+          alert('缓冲超时, 请重试!')
+        }
+      }, 60 * 1e3)
     },
     changePlayingMode: (state, payload) => {
       if (typeof payload === 'string' && (payload === 'order' || payload === 'single' || payload === 'shuffle')) {

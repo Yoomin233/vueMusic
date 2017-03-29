@@ -5,7 +5,10 @@
       <p>{{decodeURIComponent(currentPlaying.songName.replace('.mp3', ''))}}</p>
       <p>{{decodeURIComponent(currentPlaying.singer)}}</p>
     </div>
-    <div class="playBtn" :class='musicPlaying?"paused":"played"' @click='switchPlayStatus'></div>
+    <div class="playBtn" @click='switchPlayStatus'>
+      <i class='buffering' v-if='ifBuffering'></i>
+      <i class='controlBtn' :class='playingStatus' v-if='!ifBuffering'></i>
+    </div>
     <div class="listBtn" @click='showPlayBarList'></div>
     <transition name='playBarListShow'>
       <keep-alive>
@@ -41,7 +44,8 @@ export default {
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
-    musicPlaying: () => Store.state.playingStatus.musicPlaying,
+    playingStatus: () => Store.state.playingStatus.musicPlaying,
+    ifBuffering: () => Store.state.playingStatus.buffering
   },
   components: {
     playBarList,
@@ -158,15 +162,28 @@ export default {
     > div.playBtn {
       border-radius: 50%;
       border: 2px solid #999;
-    }
-    > div.playBtn.played {
-      &::before {
-        content: '\ea1c'
+      position: relative;
+      > i {
+        position: absolute;
+        z-index: 1;
+        font-style: normal;
+        font-family: 'icomoon' !important;
       }
-    }
-    > div.playBtn.paused {
-      &::before {
-        content: '\ea1d'
+      > i.buffering {
+        animation: spin 1s infinite linear;
+        &::before {
+          content: '\e97b'
+        }
+      }
+      > i.controlBtn.playing {
+        &::before {
+          content: '\ea1d'
+        }
+      }
+      > i.controlBtn.paused {
+        &::before {
+          content: '\ea1c'
+        }
       }
     }
     > div.listBtn {
@@ -192,5 +209,9 @@ export default {
       transform: translate3d(0, 100%, 0);
     }
   }
-
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
 </style>

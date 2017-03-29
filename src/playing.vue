@@ -1,7 +1,7 @@
 <template>
   <div class='top'>
     <p></p>
-    <audio controls name='media' v-if='ifAudioTag' @ended='songEnd'>
+    <audio controls name='media' v-if='ifAudioTag' @ended='songEnd' @canplay='canPlay'>
       <source :src='currentPlaying.src' type='audio/mpeg'/>
     </audio>
   </div>
@@ -17,7 +17,6 @@ export default {
     }
   },
   mounted () {
-
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
@@ -30,7 +29,7 @@ export default {
       Vue.nextTick(() => {
         this.ifAudioTag = true
         Vue.nextTick(() => {
-          if (this.musicPlaying) {
+          if (this.musicPlaying === 'playing') {
             let audioTag = document.querySelector('audio')
             audioTag.play()
           }
@@ -40,7 +39,7 @@ export default {
     musicPlaying (val) {
       let audioTag = document.querySelector('audio')
       let self = this
-      if (val) {
+      if (val === 'playing') {
         audioTag.volume = 0
         audioTag.play()
         // debugger
@@ -50,7 +49,7 @@ export default {
               setTimeout(inlineFunc, 50)
             }
         }, 50)
-      } else {
+      } else if (val === 'paused') {
         setTimeout(function inlineFunc () {
           audioTag.volume -= 0.1
           if (audioTag.volume > 0.1) {
@@ -65,6 +64,10 @@ export default {
   methods: {
     songEnd () {
       Store.commit('nextSong')
+    },
+    canPlay () {
+      // console.log('canplay!')
+      Store.commit('canPlay')
     }
   }
 }
