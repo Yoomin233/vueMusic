@@ -43,9 +43,7 @@ const Store = new Vuex.Store({
     },
     removeSong: (state, index) => {
       state.currentPlayingList.splice(index, 1)
-      if (state.playingStatus.songNumber === index) {
-        debugger
-      }
+      // todo: 如果删除当前播放歌曲, 则直接调用nextSong()方法...
     },
     updatePlayList: (state, newList) => state.currentPlayingList = newList,
     // 直接跳转到歌曲
