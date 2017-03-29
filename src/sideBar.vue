@@ -54,5 +54,11 @@ div.top {
   > p {
     padding: 0 6ch;
   }
+  > p:nth-of-type(1) {
+    &::before {
+      font-family: 'icomoon' !important;
+      content: '\'
+    }
+  }
 }
 </style>
