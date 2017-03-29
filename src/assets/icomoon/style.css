@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?9wa297');
-  src:  url('fonts/icomoon.eot?9wa297#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?9wa297') format('truetype'),
-    url('fonts/icomoon.woff?9wa297') format('woff'),
-    url('fonts/icomoon.svg?9wa297#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?lqjxs');
+  src:  url('fonts/icomoon.eot?lqjxs#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?lqjxs') format('truetype'),
+    url('fonts/icomoon.woff?lqjxs') format('woff'),
+    url('fonts/icomoon.svg?lqjxs#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-cog:before {
+  content: "\e994";
+}
+.icon-cogs:before {
+  content: "\e995";
+}
+.icon-bin:before {
+  content: "\e9ac";
+}
+.icon-cancel-circle:before {
+  content: "\ea0d";
+}
+.icon-cross:before {
+  content: "\ea0f";
+}
 .icon-headphones:before {
   content: "\e910";
 }

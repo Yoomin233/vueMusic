@@ -30,10 +30,11 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(png|jpg|gif|svg|mp3|ttf)$/,
+        test: /\.(png|jpe?g|gif|svg|mp3|ttf)$/,
         loader: 'file-loader',
         options: {
-          name: '[name].[ext]?[hash]'
+          name: 'asstes/[name].[ext]?[hash]',
+          limit: 10000
         }
       }
     ]

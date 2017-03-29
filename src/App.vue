@@ -15,7 +15,9 @@
       <activity-component></activity-component>
     </section>
     <transition :name="transitionName">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </transition>
   </div>
 </template>
@@ -51,9 +53,9 @@ export default {
   watch: {
     '$route' (to, from) {
       // console.log(to, from)
-      if (to.name === 'songList' && (from.name === 'mainUI' || from.name === 'default') || from.name === 'songList') {
+      if (to.name === 'songList' || from.name === 'songList') {
         this.transitionName = 'fadeInUp'
-      } else if (to.name === 'sideBar') {
+      } else if (to.name === 'sideBar' || from.name === 'sideBar') {
         this.transitionName = 'slideInRight'
       } else {
         this.transitionName = ''
@@ -118,18 +120,24 @@ export default {
   .slideInRight-enter-active, .slideInRight-leave-avtive {
     transition: all .3s ease;
   }
+
   .fadeInUp-enter{
     opacity: 0;
     transform: translate3d(0, 50%, 0);
   }
-  .fadeInUp-leave-active {
+
+  .fadeInUp-leave-to {
     opacity: 0;
     transform: translate3d(0, 50%, 0);
   }
+
   .slideInRight-enter {
+    opacity: 0;
     transform: translate3d(-100%, 0, 0);
   }
-  .slideInRight-leave-active {
+
+  .slideInRight-leave-to {
+    opacity: 0;
     transform: translate3d(-100%, 0, 0);
   }
 </style>

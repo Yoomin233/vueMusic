@@ -29,7 +29,7 @@ export default {
 
   },
   computed: {
-    songList: () => Store.state.playList
+    songList: () => Store.state.currentPlayingList
   }
 }
 </script>

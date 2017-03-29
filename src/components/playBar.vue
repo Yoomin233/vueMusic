@@ -1,32 +1,50 @@
 <template lang="html">
   <div class="playBar">
     <img src='https://vuejs.org/images/logo.png' alt="" class='cover'>
-    <div class="nameAndSinger">
+    <div  class="nameAndSinger">
       <p>{{decodeURIComponent(currentPlaying.songName.replace('.mp3', ''))}}</p>
       <p>{{decodeURIComponent(currentPlaying.singer)}}</p>
     </div>
     <div class="playBtn" :class='musicPlaying?"paused":"played"' @click='switchPlayStatus'></div>
-    <div class="listBtn" @click='nextSong'></div>
+    <div class="listBtn" @click='showPlayBarList'></div>
+    <transition name='playBarListShow'>
+      <keep-alive>
+        <play-bar-list class="playBarList"
+        v-show='ifPlayBarListShow'
+        ></play-bar-list>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
 <script>
 import config from '../config/config'
-import Store from '../Vuex/store'
 import {$} from '../tools/toolsFunction'
+
 import Vue from 'vue'
+import Store from '../Vuex/store'
+import Bus from '../bus'
+
+import playBarList from './playBarList.vue'
 export default {
   data () {
     return {
-
+      ifPlayBarListShow: false,
+      scrollTimer: null
     }
   },
   mounted () {
     this.scrollSongName()
+    Bus.$on('hidePlayBarList', () => {
+      this.ifPlayBarListShow = false
+    })
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
-    musicPlaying: () => Store.state.playingStatus.musicPlaying
+    musicPlaying: () => Store.state.playingStatus.musicPlaying,
+  },
+  components: {
+    playBarList,
   },
   methods: {
     switchPlayStatus () {
@@ -35,7 +53,12 @@ export default {
     nextSong () {
       Store.commit('nextSong')
     },
+    showPlayBarList () {
+      this.ifPlayBarListShow = true
+    },
     scrollSongName () {
+      clearTimeout(this.scrollTimer)
+      let self = this
       Vue.nextTick(function () {
         let elem = $('div.playBar > div.nameAndSinger > p:first-of-type')
         let elemWidth = parseInt(getComputedStyle(elem).width)
@@ -44,7 +67,7 @@ export default {
         if (diff > 1) {
           // debugger
           let dir = true
-          setTimeout(function inlineFunc () {
+          self.scrollTimer = setTimeout(function inlineFunc () {
             // debugger
             // 滚动
             if (dir) {
@@ -52,20 +75,20 @@ export default {
               // 方向转换时停留一秒
               if (elem.scrollLeft + 1 >= diff) {
                 dir = false
-                setTimeout(inlineFunc, 1e3)
+                self.scrollTimer = setTimeout(inlineFunc, 1e3)
               } else {
-                setTimeout(inlineFunc, 200)
+                self.scrollTimer = setTimeout(inlineFunc, 250)
               }
             } else {
               elem.scrollLeft --
               if (elem.scrollLeft <= 0) {
                 dir = true
-                setTimeout(inlineFunc, 1e3)
+                self.scrollTimer = setTimeout(inlineFunc, 1e3)
               } else {
-                setTimeout(inlineFunc, 200)
+                self.scrollTimer = setTimeout(inlineFunc, 250)
               }
             }
-          }, 200)
+          }, 250)
         }
       })
     }
@@ -85,7 +108,7 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
-    overflow: hidden;
+    overflow-y: visible;
     padding: .1em .4em;
     display: flex;
     background-color: rgba(255, 2552, 255, .8);
@@ -151,6 +174,22 @@ export default {
         content: '\e9bb';
         font-size: 1.2em;
       }
+    }
+    div.playBarList {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+    .playBarListShow-enter-active, .playBarListShow-leave-active {
+      transition: all .3s ease;
+    }
+    .playBarListShow-enter {
+      opacity: 0;
+      transform: translate3d(0, 100%, 0);
+    }
+    .playBarListShow-leave-to {
+      opacity: 0;
+      transform: translate3d(0, 100%, 0);
     }
   }
 

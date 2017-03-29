@@ -5,7 +5,7 @@
       <div class="avator">
 
       </div>
-      <p class='userInfo'>UserName</p>
+      <p class='userInfo'>Hymin</p>
     </div>
     <p>设置</p>
     <p>定时停止播放</p>
@@ -13,6 +13,7 @@
 </template>
 <script>
 import Router from './router'
+import rainImg from './assets/rain.jpeg'
 export default {
   mounted () {
   }
@@ -38,7 +39,7 @@ div.top {
   }
   div.personArea {
     height: 30%;
-    background-image: url('https://static1.squarespace.com/static/52bf3648e4b0b97e0fbce045/t/536017d6e4b0b0c3a3617e71/1398806488190/');
+    background-image: url('assets/rain.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
     padding: 20% 5% 5%;
@@ -49,16 +50,32 @@ div.top {
       width: 4em;
       height: 4em;
       border-radius: 50%;
+      background: url('http://placekitten.com.s3.amazonaws.com/homepage-samples/408/287.jpg') center / cover;
+    }
+    div.avator + p {
+      margin: .5em auto;
     }
   }
   > p {
-    padding: 0 6ch;
+    padding: 0 4ch;
+    position: relative;
+    &::before {
+      position: absolute;
+      transform: translateX(-1.2ch);
+      font-size: 1.5em;
+      color: #888;
+      font-family: 'icomoon' !important;
+    }
   }
   > p:nth-of-type(1) {
     &::before {
-      font-family: 'icomoon' !important;
-      content: '\'
+      content: '\e994';
     }
+  }
+    > p:nth-of-type(2) {
+      &::before {
+        content: '\e94e';
+      }
   }
 }
 </style>
