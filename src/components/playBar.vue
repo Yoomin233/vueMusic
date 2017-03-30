@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="playBar">
-    <img src='https://vuejs.org/images/logo.png' alt="" class='cover'>
-    <div  class="nameAndSinger">
+    <img @click='showPlayingUI' src='https://vuejs.org/images/logo.png' alt="" class='cover'>
+    <div @click='showPlayingUI' class="nameAndSinger">
       <p>{{decodeURIComponent(currentPlaying.songName.replace('.mp3', ''))}}</p>
       <p>{{decodeURIComponent(currentPlaying.singer)}}</p>
     </div>
@@ -13,8 +13,14 @@
     <transition name='playBarListShow'>
       <keep-alive>
         <play-bar-list class="playBarList"
-        v-show='ifPlayBarListShow'
+        v-if='ifPlayBarListShow'
         ></play-bar-list>
+      </keep-alive>
+    </transition>
+    <transition name='plyingUIShow'>
+      <keep-alive>
+        <playing-UI v-if='ifPlayingUIShow'>
+        </playing-UI>
       </keep-alive>
     </transition>
   </div>
@@ -29,10 +35,12 @@ import Store from '../Vuex/store'
 import Bus from '../bus'
 
 import playBarList from './playBarList.vue'
+import playingUI from './playingUI.vue'
 export default {
   data () {
     return {
       ifPlayBarListShow: false,
+      ifPlayingUIShow: false,
       scrollTimer: null
     }
   },
@@ -40,6 +48,9 @@ export default {
     this.scrollSongName()
     Bus.$on('hidePlayBarList', () => {
       this.ifPlayBarListShow = false
+    })
+    Bus.$on('hidePlayingUI', () => {
+      this.ifPlayingUIShow = false
     })
   },
   computed: {
@@ -49,6 +60,7 @@ export default {
   },
   components: {
     playBarList,
+    playingUI
   },
   methods: {
     switchPlayStatus () {
@@ -59,6 +71,12 @@ export default {
     },
     showPlayBarList () {
       this.ifPlayBarListShow = true
+    },
+    showPlayingUI () {
+      this.ifPlayingUIShow = true
+      Vue.nextTick(() => {
+        Bus.$emit('showPlayingUI')
+      })
     },
     scrollSongName () {
       clearTimeout(this.scrollTimer)
@@ -165,7 +183,6 @@ export default {
       position: relative;
       > i {
         position: absolute;
-        z-index: 1;
         font-style: normal;
         font-family: 'icomoon' !important;
       }
@@ -197,17 +214,18 @@ export default {
       left: 0;
       bottom: 0;
     }
-    .playBarListShow-enter-active, .playBarListShow-leave-active {
+    .playBarListShow-enter-active, .playBarListShow-leave-active, .plyingUIShow-enter-active, .plyingUIShow-leave-active {
       transition: all .3s ease;
     }
-    .playBarListShow-enter {
+    .playBarListShow-enter, .playBarListShow-leave-to {
       opacity: 0;
       transform: translate3d(0, 100%, 0);
     }
-    .playBarListShow-leave-to {
+    .plyingUIShow-enter,  .plyingUIShow-leave-to {
       opacity: 0;
-      transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 50%, 0);
     }
+
   }
   @keyframes spin {
     to {

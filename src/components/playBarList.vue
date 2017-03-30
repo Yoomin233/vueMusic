@@ -9,7 +9,7 @@
       >
       <span @click='jumpToSong(index)'>{{decodeURIComponent(song.songName).replace('.mp3', '')}} - </span>
       <span @click='jumpToSong(index)'>{{decodeURIComponent(song.singer)}}</span>
-      <span class='removeSong' @click='removeSong(index)'>X</span>
+      <span @click='removeSong(index)' class='removeSong' >X</span>
       </p>
     </div>
   </div>
@@ -40,6 +40,11 @@ export default {
     playModeClass: () => Store.state.playingStatus.mode,
     songList: () => Store.state.currentPlayingList,
     songNumber: () => Store.state.playingStatus.songNumber
+  },
+  watch: {
+    songNumber (number) {
+      document.querySelectorAll('div.playBarList > div.songList > p')[number].scrollIntoView()
+    }
   },
   methods: {
     hidePlayBarList () {

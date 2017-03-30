@@ -13,7 +13,6 @@
 </template>
 <script>
 import Router from './router'
-import rainImg from './assets/rain.jpeg'
 export default {
   mounted () {
   }
