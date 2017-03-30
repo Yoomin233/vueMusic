@@ -78,6 +78,8 @@ div.top {
     padding: 0 .5em;
     flex-direction: row;
     position: relative;
+    z-index: 3;
+    background-color: #646464;
     &::after {
       content: '';
       display: block;
@@ -139,17 +141,21 @@ div.top {
   }
   div.needle {
     width: 50%;
-    height: 1em;
-    background-color: #fff;
-    margin-left: 50%;
+    height: 20em;
+    background-image: url('../assets/turntableArm.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin-left: 10%;
     transform:rotate(.1turn);
-    transform-origin: left center;
+    transform-origin: 75% 16%;
     transition: transform .5s ease;
     z-index: 1;
     position: absolute;
+    transform: rotate(-.24turn);
+    top: 1em;
   }
   div.needlePlayed {
-    transform: rotate(.15turn);
+    transform: rotate(-.2turn);
   }
   div.gramophoneDisc {
     width: 17em;
