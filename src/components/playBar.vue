@@ -222,8 +222,7 @@ export default {
       transform: translate3d(0, 100%, 0);
     }
     .plyingUIShow-enter,  .plyingUIShow-leave-to {
-      opacity: 0;
-      transform: translate3d(0, 50%, 0);
+      transform: translate3d(0, 100%, 0);
     }
 
   }

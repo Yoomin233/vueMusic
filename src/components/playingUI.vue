@@ -13,8 +13,12 @@
       <div class="cover" :style='{"background-image": coverImg}' :class='{coverSpin: ifMusicPlaying}'>
       </div>
     </div>
-    <div class="controls" @click='switchPlayStatus'>
-      13456
+    <div class="controls">
+      <p class='mode'></p>
+      <p class='prevSong'></p>
+      <p class='playBtn'></p>
+      <p class='nextSong'></p>
+      <p class='songList'></p>
     </div>
     <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
     </div>
@@ -79,7 +83,6 @@ div.top {
     flex-direction: row;
     position: relative;
     z-index: 3;
-    background-color: #646464;
     &::after {
       content: '';
       display: block;
@@ -89,7 +92,6 @@ div.top {
       left: 0;
       bottom: -1px;
       background-image: linear-gradient(to right, transparent 0%, rgba(200, 200, 200, 0.5) 50%, transparent 100%);
-      box-shadow: 0 0 5px rgba(200, 200, 200, 0.5);
       z-index: -1;
     }
     > span.back {
@@ -193,7 +195,23 @@ div.top {
     left: 0;
     width: 100%;
     height: 3em;
-    background-color: #fff;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 5%;
+    > p {
+      width: 20%;
+      margin: 0 auto;
+      &::before {
+      font-family: 'icomoon' !important;
+      color: #fff;
+      }
+    }
+    > p.mode {
+      &::before {
+        content: '\ea30'
+      }
+    }
   }
   @keyframes spin {
     to {
