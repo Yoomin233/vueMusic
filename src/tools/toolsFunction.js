@@ -12,8 +12,14 @@ const getAjax = function (method, url) {
     xhr.send()
   })
 }
+const formatTime = (duration) => {
+  let seconds = duration % 60
+  let minutes = (duration - seconds) / 60
+  return `${minutes > 9 ? minutes : '0' + minutes}:${seconds > 9 ? seconds : '0' + seconds}`
+}
 export {
   $,
   log,
-  getAjax
+  getAjax,
+  formatTime
 }

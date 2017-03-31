@@ -4,14 +4,18 @@ Vue.use(Vuex)
 
 import config from '../config/config'
 
+const modeList = ['shuffle', 'order', 'single']
+
 const Store = new Vuex.Store({
   state: {
     placeHolderImg: 'https://vuejs.org/images/logo.png',
     playingStatus: {
-      musicPlaying: 'paused',
+      playStatus: 'paused',
       volume: 1,
       songNumber: 0,
       mode: 'shuffle',
+      currentTime: 0,
+      duration: 0,
       buffering: true
     },
     currentPlayingList: [],
@@ -26,14 +30,17 @@ const Store = new Vuex.Store({
   },
   mutations: {
     switchPlayStatus: state => {
-      if (state.playingStatus.musicPlaying === 'paused') {
-        state.playingStatus.musicPlaying = 'playing'
-      } else if (state.playingStatus.musicPlaying === 'playing') {
-        state.playingStatus.musicPlaying = 'paused'
+      if (state.playingStatus.playStatus === 'paused') {
+        state.playingStatus.playStatus = 'playing'
+      } else if (state.playingStatus.playStatus === 'playing') {
+        state.playingStatus.playStatus = 'paused'
       }
     },
     // 缓冲结束
-    canPlay: state => state.playingStatus.buffering = false,
+    canPlay: (state, duration) => {
+      state.playingStatus.buffering = false
+      state.playingStatus.duration = duration
+    },
     // '下一首'方法
     nextSong: state => {
       let nextSongNum
@@ -76,6 +83,9 @@ const Store = new Vuex.Store({
         }
       }, 60 * 1e3)
     },
+    prevSong: (state) => {
+
+    },
     // 删除当前歌单歌曲
     removeSong: (state, index) => {
       state.currentPlayingList.splice(index, 1)
@@ -92,16 +102,25 @@ const Store = new Vuex.Store({
         songName: state.currentPlayingList[songNumber].songName
       }
       state.playingStatus.buffering = true
+      state.recentPlayed.push(songNumber)
       setTimeout(() => {
         if (state.playingStatus.buffering) {
           alert('缓冲超时, 请重试!')
         }
       }, 60 * 1e3)
     },
-    changePlayingMode: (state, payload) => {
-      if (typeof payload === 'string' && (payload === 'order' || payload === 'single' || payload === 'shuffle')) {
-        state.playingStatus.mode = payload
+    updatePlayProgress: (state, time) => {
+      state.playingStatus.currentTime = Math.round(time)
+    },
+    togglePlayMode: (state) => {
+      let currentModeNo = modeList.indexOf(state.playingStatus.mode)
+      let nextModeNo
+      if (currentModeNo === modeList.length - 1) {
+        nextModeNo = 0
+      } else {
+        nextModeNo = currentModeNo + 1
       }
+      state.playingStatus.mode = modeList[nextModeNo]
     }
   }
 })

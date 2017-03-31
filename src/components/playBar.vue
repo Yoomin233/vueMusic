@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
-    playingStatus: () => Store.state.playingStatus.musicPlaying,
+    playingStatus: () => Store.state.playingStatus.playStatus,
     ifBuffering: () => Store.state.playingStatus.buffering
   },
   components: {
@@ -146,7 +146,7 @@ export default {
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      width: 60%;
+      width: 70%;
       padding: 0 .2em;
       box-sizing: border-box;
       p {
@@ -208,11 +208,6 @@ export default {
         content: '\e9bb';
         font-size: 1.2em;
       }
-    }
-    div.playBarList {
-      position: absolute;
-      left: 0;
-      bottom: 0;
     }
     .playBarListShow-enter-active, .playBarListShow-leave-active, .plyingUIShow-enter-active, .plyingUIShow-leave-active {
       transition: all .3s ease;

@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="top">
+  <div class="playBarList">
     <div class="shade" @click='hidePlayBarList'></div>
     <p @click='togglePlayMode' :class='playModeClass'><span>{{playModeText}}({{songList.length}})</span><span>清空</span></p>
     <div class="songList">
@@ -20,11 +20,10 @@ import Bus from '../bus'
 export default {
   data () {
     return {
-      modeList: ['shuffle', 'order', 'single']
+
     }
   },
   computed: {
-    playMode: () => Store.state.playingStatus.mode,
     playModeText: () => {
       switch (Store.state.playingStatus.mode) {
         case 'shuffle':
@@ -51,15 +50,7 @@ export default {
       Bus.$emit('hidePlayBarList')
     },
     togglePlayMode () {
-      let currentModeNo = this.modeList.indexOf(this.playMode)
-      let nextModeNo
-      if (currentModeNo === this.modeList.length - 1) {
-        nextModeNo = 0
-      } else {
-        nextModeNo = currentModeNo + 1
-      }
-      // debugger
-      Store.commit('changePlayingMode', this.modeList[nextModeNo])
+      Store.commit('togglePlayMode')
     },
     jumpToSong (index) {
       Store.commit('updateCurrentPlaying', index)
@@ -72,11 +63,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-div.top {
+div.playBarList {
+  position: fixed;
+  left: 0;
+  bottom: 0;
   width: 100%;
   height: 60vh;
   z-index: 1;
-  position: relative;
   background-color: rgba(255, 255, 255, 0.95);
   div.shade {
     width: 100%;

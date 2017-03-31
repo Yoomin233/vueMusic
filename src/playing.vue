@@ -1,7 +1,7 @@
 <template>
   <div class='top'>
     <p></p>
-    <audio controls name='media' v-if='ifAudioTag' @ended='songEnd' @canplay='canPlay'>
+    <audio controls name='media' @ended='songEnd' @canplay='canPlay($event)' @progress='updateSongPlayProgress($event)'>
       <source :src='currentPlaying.src' type='audio/mpeg'/>
     </audio>
   </div>
@@ -13,36 +13,35 @@ import Vue from 'vue'
 export default {
   data () {
     return {
-      ifAudioTag: true
+      progressTimer: null
     }
   },
   mounted () {
   },
   computed: {
     currentPlaying: () => Store.state.currentPlaying,
-    musicPlaying: () => Store.state.playingStatus.musicPlaying,
+    playStatus: () => Store.state.playingStatus.playStatus,
     volume: () => Store.state.playingStatus.volume,
   },
   watch: {
     currentPlaying () {
-      this.ifAudioTag = false
-      Vue.nextTick(() => {
-        this.ifAudioTag = true
-        Vue.nextTick(() => {
-          if (this.musicPlaying === 'playing') {
-            let audioTag = document.querySelector('audio')
-            audioTag.play()
-          }
-        })
-      })
+      let audioTag = document.querySelector('audio')
+      audioTag.load()
+      if (this.playStatus === 'playing') {
+        audioTag.play()
+      }
     },
-    musicPlaying (val) {
+    playStatus (val) {
       let audioTag = document.querySelector('audio')
       let self = this
       if (val === 'playing') {
         audioTag.volume = 0
+        // 开启监听进度
+        this.progressTimer = setInterval(() => {
+          Store.commit('updatePlayProgress', audioTag.currentTime)
+        }, 1000)
+        // 开始播放
         audioTag.play()
-        // debugger
         setTimeout(function inlineFunc () {
             audioTag.volume += 0.1
             if (audioTag.volume < self.volume - 0.1) {
@@ -55,6 +54,7 @@ export default {
           if (audioTag.volume > 0.1) {
             setTimeout(inlineFunc, 50)
           } else {
+            clearInterval(self.progressTimer)
             audioTag.pause()
           }
         }, 50)
@@ -62,12 +62,16 @@ export default {
     }
   },
   methods: {
+
     songEnd () {
       Store.commit('nextSong')
     },
-    canPlay () {
+    canPlay (e) {
       // console.log('canplay!')
-      Store.commit('canPlay')
+      Store.commit('canPlay', Math.round(e.target.duration))
+    },
+    updateSongPlayProgress (e) {
+      // console.log(e)
     }
   }
 }

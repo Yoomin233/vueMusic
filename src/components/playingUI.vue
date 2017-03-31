@@ -8,33 +8,63 @@
       </div>
       <span class='share'></span>
     </div>
-    <div class="needle" :class='{needlePlayed: ifMusicPlaying}'></div>
+    <div class="needle" :class='{needlePlayed: playStatus === "playing"}'></div>
     <div class="gramophoneDisc">
-      <div class="cover" :style='{"background-image": coverImg}' :class='{coverSpin: ifMusicPlaying}'>
+      <div class="cover" :style='{"background-image": coverImg}' :class='{coverSpin: playStatus === "playing"}'>
+      </div>
+    </div>
+    <div class="songMenu">
+
+    </div>
+    <div class="progressBar">
+      <div class="playedTime">
+        {{songCurrentTime}}
+      </div>
+      <div class="mainBar">
+        <div class="playedBar" :style="{width: songPlayProgress}">
+
+        </div>
+      </div>
+      <div class="songDuration">
+        {{songDuration}}
       </div>
     </div>
     <div class="controls">
-      <p class='mode'></p>
+      <p class='mode' :class='playMode' @click='togglePlayMode'></p>
       <p class='prevSong'></p>
-      <p class='playBtn'></p>
-      <p class='nextSong'></p>
-      <p class='songList'></p>
+      <p class='playBtn' :class='playStatus' @click='switchPlayStatus'></p>
+      <p class='nextSong' @click='nextSong'></p>
+      <p class='songList' @click='showPlayBarList'></p>
     </div>
+    <transition name='playBarListShow'>
+      <keep-alive>
+        <play-bar-list class="playBarList"
+        v-show='ifPlayBarListShow'
+        ></play-bar-list>
+      </keep-alive>
+    </transition>
     <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+
 import Store from '../Vuex/store'
 import Bus from '../bus'
 
-import Vue from 'vue'
+
+import playBarList from './playBarList.vue'
+
+import {formatTime} from '../tools/toolsFunction'
+
 export default {
   data () {
     return {
       ifShowBlurredBg: false,
-      blurredBgOpacity: 0
+      blurredBgOpacity: 0,
+      ifPlayBarListShow: false
     }
   },
   mounted () {
@@ -44,20 +74,46 @@ export default {
         this.blurredBgOpacity = 1
       }, 1e3)
     })
+    Bus.$on('hidePlayBarList', () => {
+      this.ifPlayBarListShow = false
+    })
+  },
+  components: {
+    playBarList
   },
   computed: {
     coverImg: () => `url(${Store.state.placeHolderImg})`,
     currentPlaying: () => Store.state.currentPlaying,
-    ifMusicPlaying: () => Store.state.playingStatus.musicPlaying === 'playing'
+    playStatus: () => {
+      if (Store.state.playingStatus.buffering) {
+        return 'buffering'
+      } else {
+        return Store.state.playingStatus.playStatus
+      }
+    },
+    playMode: () => Store.state.playingStatus.mode,
+    songDuration: () => formatTime(Store.state.playingStatus.duration),
+    songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
+    songPlayProgress: () => `${(Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100}%`
   },
   methods: {
     switchPlayStatus () {
       Store.commit('switchPlayStatus')
     },
+    togglePlayMode () {
+      Store.commit('togglePlayMode')
+    },
+    nextSong () {
+      Store.commit('nextSong')
+    },
+    showPlayBarList () {
+      this.ifPlayBarListShow = true
+    },
     hidePlayingUI () {
       this.ifShowBlurredBg = false
       Vue.nextTick(() => {
         this.blurredBgOpacity = 0
+        this.ifPlayBarListShow = false
         Bus.$emit('hidePlayingUI')
       })
     }
@@ -166,7 +222,7 @@ div.top {
     margin: 5em auto;
     background-color: #fff;
     background: url('../assets/vinyl.png') center / 100%;
-    position: absolute;
+    position: relative;
     left: 0;
     right: 0;
     div.cover {
@@ -189,9 +245,50 @@ div.top {
       animation-play-state: running;
     }
   }
+  div.songMenu {
+    width: 100%;
+    height: 3em;
+  }
+  div.progressBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    font-size: .5em;
+    > div.playedTime {
+      color: rgba(255, 255, 255, .95);
+    }
+    > div.mainBar {
+      width: 70%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, .5);
+      position: relative;
+      > div.playedBar {
+        background-color: red;
+        height: inherit;
+        position: relative;
+        &::after {
+          font-family: 'icomoon' !important;
+          width: 1em;
+          height: 1em;
+          content: '';
+          background-color: #fff;
+          display: block;
+          position: absolute;
+          border-radius: 50%;
+          right: 0;
+          top: -.4em;
+        }
+      }
+    }
+    > div.songDuration {
+      color: rgba(255, 255, 255, .7);
+    }
+  }
   div.controls {
     position: absolute;
-    bottom: 5vh;
+    bottom: 6vh;
     left: 0;
     width: 100%;
     height: 3em;
@@ -202,16 +299,90 @@ div.top {
     > p {
       width: 20%;
       margin: 0 auto;
-      &::before {
-      font-family: 'icomoon' !important;
-      color: #fff;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      &:active {
+        filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.9));
+      }
+      &::before, &::after {
+        font-family: 'icomoon' !important;
+        color: #fff;
+        font-size: 2em;
       }
     }
-    > p.mode {
+    > p.mode, > p.songList {
       &::before {
-        content: '\ea30'
+        color: darken(#fff, 20%);
+        font-size: 1.5em;
       }
     }
+    > p.mode.shuffle {
+      &::before {
+        content: '\ea30';
+      }
+    }
+    > p.mode.single {
+      &::before {
+        content: '\ea2d';
+      }
+    }
+    > p.mode.order {
+      &::before {
+        content: '\ea2e';
+      }
+    }
+    > p.prevSong {
+      &::before {
+        content: '\ea23';
+      }
+    }
+    > p.playBtn {
+      &::after {
+        content: '';
+        width: 1.5em;
+        height: 1.5em;
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 1px solid rgba(200, 200, 200, 0.6);
+      }
+    }
+    > p.playBtn.buffering {
+      &::before {
+        content: '\e981';
+        animation: spin 1s infinite;
+      }
+    }
+    > p.playBtn.playing {
+      &::before {
+        content: '\ea1d';
+      }
+    }
+    > p.playBtn.paused {
+      &::before {
+        content: '\ea1c';
+      }
+    }
+    > p.nextSong {
+      &::before {
+        content: '\ea24';
+      }
+    }
+    > p.songList {
+      &::before {
+        content: '\e9bb';
+      }
+    }
+  }
+  .playBarListShow-enter, .playBarListShow-leave-to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
   }
   @keyframes spin {
     to {
