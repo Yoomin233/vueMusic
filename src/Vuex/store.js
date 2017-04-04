@@ -125,6 +125,9 @@ const Store = new Vuex.Store({
         nextModeNo = currentModeNo + 1
       }
       state.playingStatus.mode = modeList[nextModeNo]
+    },
+    changeCurrentTime: (state, percentage) => {
+      state.playingStatus.currentTime = parseInt(state.playingStatus.duration * (percentage / 100))
     }
   }
 })

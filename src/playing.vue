@@ -22,6 +22,7 @@ export default {
     currentPlaying: () => Store.state.currentPlaying,
     playStatus: () => Store.state.playingStatus.playStatus,
     volume: () => Store.state.playingStatus.volume,
+    currentTime: () => Store.state.playingStatus.currentTime
   },
   watch: {
     currentPlaying () {
@@ -58,6 +59,12 @@ export default {
             audioTag.pause()
           }
         }, 50)
+      }
+    },
+    currentTime: (val) => {
+      let audioTag = document.querySelector('audio')
+      if (Math.abs(val - audioTag.currentTime) > 5) {
+        audioTag.currentTime = val
       }
     }
   },

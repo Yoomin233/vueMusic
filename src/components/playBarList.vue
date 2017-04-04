@@ -69,7 +69,7 @@ div.playBarList {
   bottom: 0;
   width: 100%;
   height: 60vh;
-  z-index: 1;
+  z-index: 10;
   background-color: rgba(255, 255, 255, 0.95);
   div.shade {
     width: 100%;

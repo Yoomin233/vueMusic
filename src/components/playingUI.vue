@@ -26,7 +26,14 @@
     </transition>
     <transition name='fade'>
       <div @click='switchBack' class="back" v-if='ifBackShow'>
-        <p class='volumeCtrl'></p>
+        <p class='volumeCtrl'>
+          <span class='volumeCtrlBar'>
+            <span class='volumeCtrlBtn'></span>
+          </span>
+          <span class='volumeCtrlBg'>
+
+          </span>
+        </p>
       </div>
     </transition>
     <div class="progressBar" :class='{progressBarAbsolute:ifBackShow}'>
@@ -36,7 +43,7 @@
       <div class="mainBar"
         @touchstart='playProgressTouchStart($event)'
         @touchend='playProgressTouchEnd($event)'
-        @touchmove='throttle(playProgressDragged($event), 100)'>
+        @touchmove='playProgressDragged($event)'>
         <div class="playedBar"
           :style="{width: songPlayProgress}"
           >
@@ -44,6 +51,10 @@
             :class='{playProgressSpanPressed: ifProgressSpanPressed}'
           >
           </span>
+        </div>
+        <div class="playedBarBg">
+        </div>
+        <div class="bufferBar">
         </div>
       </div>
       <div class="songDuration">
@@ -87,8 +98,20 @@ export default {
       blurredBgOpacity: 0,
       ifPlayBarListShow: false,
       ifBackShow: false,
-      ifProgressSpanPressed: false
+      ifProgressSpanPressed: false,
+      touchRecorder: {},
+      playBarWidth: null
     }
+  },
+  beforeCreate () {
+    this.playProgressDragged = throttle((e) => {
+      let draggedDistance = e.touches[0].pageX - this.touchRecorder.startX
+      let draggedPercentage = draggedDistance / this.playBarWidth
+      let currentPercentage = this.touchRecorder.startPercentage + Math.round(draggedPercentage * 100)
+      // console.log(currentPercentage)
+      if (0 <= currentPercentage && currentPercentage <= 100)
+        Store.commit('changeCurrentTime', currentPercentage)
+    }, 50)
   },
   mounted () {
     Bus.$on('showPlayingUI', () => {
@@ -100,6 +123,7 @@ export default {
     Bus.$on('hidePlayBarList', () => {
       this.ifPlayBarListShow = false
     })
+    this.playBarWidth = parseInt(getComputedStyle(document.querySelector('div.progressBar > div.mainBar')).width)
   },
   components: {
     playBarList
@@ -115,8 +139,11 @@ export default {
       }
     },
     playMode: () => Store.state.playingStatus.mode,
+
     songDuration: () => formatTime(Store.state.playingStatus.duration),
+
     songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
+
     songPlayProgress: () => `${Math.round((Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100)}%`
   },
   methods: {
@@ -144,25 +171,22 @@ export default {
       this.ifBackShow = !this.ifBackShow
     },
     playProgressTouchStart (e) {
-      if (this.playStatus === 'playing') {
-        // pause the play while drag progress span
-        Store.commit('switchPlayStatus')
-      }
+      // if (this.playStatus === 'playing') {
+      //   // pause the play while drag progress span
+      //   Store.commit('switchPlayStatus')
+      // }
       this.ifProgressSpanPressed = true
+      this.touchRecorder.startX = e.touches[0].pageX
+      this.touchRecorder.startPercentage = parseInt(this.songPlayProgress)
     },
     playProgressTouchEnd (e) {
-      if (this.playStatus === 'paused') {
-        // resume the play while finish dragging
-        Store.commit('switchPlayStatus')
-      }
+      // if (this.playStatus === 'paused') {
+      //   // resume the play while finish dragging
+      //   Store.commit('switchPlayStatus')
+      // }
       this.ifProgressSpanPressed = false
-    },
-    playProgressDragged (e) {
-      let targetSpan = document.querySelector('span', e.currentTarget)
-      console.log('dragged!')
-    },
-    throttle (fn, interval) {
-      return throttle(fn, interval)
+      this.touchRecorder.startX = null
+      this.touchRecorder.startPercentage = null
     }
   }
 }
@@ -304,7 +328,51 @@ div.top {
     position: absolute;
     top: 10%;
     > p.volumeCtrl {
-      margin: 0 auto;
+      padding: 1em;
+      color: darken(#fff, 20%);
+      position: relative;
+      margin: 0 3em;
+      &::before {
+        font-family: 'icomoon' !important;
+        content: '\ea27';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        transform: translateX(-150%) translateY(25%);
+      }
+      > span {
+        position: absolute;
+        height: 2px;
+        background-color: #fff;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 100%;
+        left: 0;
+      }
+      > span.volumeCtrlBar {
+        background-color: darken(#fff, 30%);
+        width: 50%;
+        z-index: 3;
+        > span.volumeCtrlBtn {
+          display: inline-block;
+          width: .5em;
+          height: .5em;
+          border-radius: 50%;
+          position: absolute;
+          right: 0;
+          top: 0;
+          transform: translateY(-40%) translateX(50%);
+          background-color: #fff;
+        }
+      }
+      > span.volumeCtrlBg {
+        background-color: rgba(200, 200, 200, .5);
+        z-index: 1;
+      }
     }
   }
   div.progressBar {
@@ -324,10 +392,14 @@ div.top {
       height: 2px;
       position: relative;
       padding: 1em 0;
+      > div {
+        height: inherit;
+        position: absolute;
+        width: 100%;
+      }
       > div.playedBar {
         background-color: red;
-        height: inherit;
-        position: relative;
+        z-index: 3;
         > span {
           width: 1em;
           height: 1em;
@@ -341,6 +413,15 @@ div.top {
         > span.playProgressSpanPressed {
           background-color: darken(#fff, 20%);
         }
+      }
+      > div.playedBarBg {
+        background-color: rgba(200, 200, 200, .5);
+        z-index:1;
+      }
+      > div.bufferBar {
+        background: rgba(200, 200, 200, .8);
+        z-index: 2;
+        width: 0;
       }
     }
     > div.songDuration {
