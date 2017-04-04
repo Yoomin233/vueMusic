@@ -17,9 +17,19 @@ const formatTime = (duration) => {
   let minutes = (duration - seconds) / 60
   return `${minutes > 9 ? minutes : '0' + minutes}:${seconds > 9 ? seconds : '0' + seconds}`
 }
+const throttle = (fn, interval) => {
+  let start = Date.now()
+  return (...rest) => {
+    if (Date.now() - start >= interval) {
+      start = Date.now()
+      fn(...rest)
+    }
+  }
+}
 export {
   $,
   log,
   getAjax,
-  formatTime
+  formatTime,
+  throttle
 }

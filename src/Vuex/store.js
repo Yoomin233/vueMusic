@@ -21,10 +21,10 @@ const Store = new Vuex.Store({
     currentPlayingList: [],
     playLists: [],
     currentPlaying: {
-      src: `${config.musicServer.url}ABBA%20-%20Happy%20New%20Year.mp3`,
-      filename: "ABBA%20-%20Happy%20New%20Year.mp3",
-      singer: 'ABBA',
-      songName: 'Happy%20New%20Year.mp3',
+      src: `${config.musicServer.url}Ariana%20Grande%2CJohn%20Legend%20-%20Beauty%20and%20the%20Beast.mp3`,
+      filename: "Ariana%20Grande%2CJohn%20Legend%20-%20Beauty%20and%20the%20Beast.mp3",
+      singer: 'Ariana%20Grande%2CJohn%20Legend',
+      songName: 'Beauty%20and%20the%20Beast.mp3',
     },
     recentPlayed:[]
   },
@@ -82,6 +82,8 @@ const Store = new Vuex.Store({
           alert('缓冲超时, 请重试!')
         }
       }, 60 * 1e3)
+      // 重置已播放时间
+      Store.state.playingStatus.currentTime = 0
     },
     prevSong: (state) => {
 
@@ -108,6 +110,8 @@ const Store = new Vuex.Store({
           alert('缓冲超时, 请重试!')
         }
       }, 60 * 1e3)
+      // 重置已播放时间
+      Store.state.playingStatus.currentTime = 0
     },
     updatePlayProgress: (state, time) => {
       state.playingStatus.currentTime = Math.round(time)

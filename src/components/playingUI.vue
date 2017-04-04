@@ -8,21 +8,42 @@
       </div>
       <span class='share'></span>
     </div>
-    <div class="needle" :class='{needlePlayed: playStatus === "playing"}'></div>
-    <div class="gramophoneDisc">
-      <div class="cover" :style='{"background-image": coverImg}' :class='{coverSpin: playStatus === "playing"}'>
+    <transition name='fade'>
+      <div @click='switchBack' class="needle" :class='{needlePlayed: playStatus === "playing"}' v-if='!ifBackShow'></div>
+    </transition>
+    <transition name='fade'>
+      <div @click='switchBack' class="gramophoneDisc" v-if='!ifBackShow'>
+        <div class="cover" :class='{coverSpin: playStatus === "playing"}'>
+          <img :src="coverImg.match(/url\(([^)]*)\)/)[1]" alt="">
+        </div>
       </div>
-    </div>
-    <div class="songMenu">
-
-    </div>
-    <div class="progressBar">
+    </transition>
+    <transition name='fade'>
+      <div @click='switchBack' class="songMenu" v-if='!ifBackShow'>
+        <p class='likeBtn'></p>
+        <p class='comments'></p>
+      </div>
+    </transition>
+    <transition name='fade'>
+      <div @click='switchBack' class="back" v-if='ifBackShow'>
+        <p class='volumeCtrl'></p>
+      </div>
+    </transition>
+    <div class="progressBar" :class='{progressBarAbsolute:ifBackShow}'>
       <div class="playedTime">
         {{songCurrentTime}}
       </div>
-      <div class="mainBar">
-        <div class="playedBar" :style="{width: songPlayProgress}">
-
+      <div class="mainBar"
+        @touchstart='playProgressTouchStart($event)'
+        @touchend='playProgressTouchEnd($event)'
+        @touchmove='throttle(playProgressDragged($event), 100)'>
+        <div class="playedBar"
+          :style="{width: songPlayProgress}"
+          >
+          <span
+            :class='{playProgressSpanPressed: ifProgressSpanPressed}'
+          >
+          </span>
         </div>
       </div>
       <div class="songDuration">
@@ -57,14 +78,16 @@ import Bus from '../bus'
 
 import playBarList from './playBarList.vue'
 
-import {formatTime} from '../tools/toolsFunction'
+import {formatTime, throttle} from '../tools/toolsFunction'
 
 export default {
   data () {
     return {
       ifShowBlurredBg: false,
       blurredBgOpacity: 0,
-      ifPlayBarListShow: false
+      ifPlayBarListShow: false,
+      ifBackShow: false,
+      ifProgressSpanPressed: false
     }
   },
   mounted () {
@@ -94,7 +117,7 @@ export default {
     playMode: () => Store.state.playingStatus.mode,
     songDuration: () => formatTime(Store.state.playingStatus.duration),
     songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
-    songPlayProgress: () => `${(Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100}%`
+    songPlayProgress: () => `${Math.round((Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100)}%`
   },
   methods: {
     switchPlayStatus () {
@@ -116,6 +139,30 @@ export default {
         this.ifPlayBarListShow = false
         Bus.$emit('hidePlayingUI')
       })
+    },
+    switchBack () {
+      this.ifBackShow = !this.ifBackShow
+    },
+    playProgressTouchStart (e) {
+      if (this.playStatus === 'playing') {
+        // pause the play while drag progress span
+        Store.commit('switchPlayStatus')
+      }
+      this.ifProgressSpanPressed = true
+    },
+    playProgressTouchEnd (e) {
+      if (this.playStatus === 'paused') {
+        // resume the play while finish dragging
+        Store.commit('switchPlayStatus')
+      }
+      this.ifProgressSpanPressed = false
+    },
+    playProgressDragged (e) {
+      let targetSpan = document.querySelector('span', e.currentTarget)
+      console.log('dragged!')
+    },
+    throttle (fn, interval) {
+      return throttle(fn, interval)
     }
   }
 }
@@ -129,10 +176,14 @@ div.top {
   top: 0;
   left: 0;
   background-color: rgb(100,100,100);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 5vh;
   div.songInfo {
     display: flex;
-    height: 2em;
     color: #fff;
+    height: 10%;
     font-size: 2em;
     align-items: center;
     padding: 0 .5em;
@@ -216,30 +267,28 @@ div.top {
     transform: rotate(-.2turn);
   }
   div.gramophoneDisc {
-    width: 17em;
-    height: 17em;
+    height: 60%;
+    padding-top: 100%;
     border-radius: 50%;
-    margin: 5em auto;
-    background-color: #fff;
-    background: url('../assets/vinyl.png') center / 100%;
     position: relative;
-    left: 0;
-    right: 0;
     div.cover {
+      background: url('../assets/vinyl.png') center / 100% no-repeat;
       position: absolute;
-      width: 70%;
-      height: 70%;
-      background-color: #fff;
+      width: 75%;
+      height: 75%;
       left: 0;
       right: 0;
       top: 0;
       bottom: 0;
       margin: auto;
-      border-radius: 50%;
       background-position: center;
       background-size: contain;
       animation: spin 30s linear infinite;
       animation-play-state: paused;
+      img {
+        width: 80%;
+        vertical-align: text-top;
+      }
     }
     div.coverSpin {
       animation-play-state: running;
@@ -247,7 +296,16 @@ div.top {
   }
   div.songMenu {
     width: 100%;
-    height: 3em;
+    height: 10%;
+  }
+  div.back {
+    height: 70%;
+    width: 100%;
+    position: absolute;
+    top: 10%;
+    > p.volumeCtrl {
+      margin: 0 auto;
+    }
   }
   div.progressBar {
     display: flex;
@@ -256,23 +314,23 @@ div.top {
     align-items: center;
     padding: 0 1em;
     font-size: .5em;
+    height: 10%;
     > div.playedTime {
       color: rgba(255, 255, 255, .95);
+      width: 10%;
     }
     > div.mainBar {
       width: 70%;
       height: 2px;
-      background-color: rgba(255, 255, 255, .5);
       position: relative;
+      padding: 1em 0;
       > div.playedBar {
         background-color: red;
         height: inherit;
         position: relative;
-        &::after {
-          font-family: 'icomoon' !important;
+        > span {
           width: 1em;
           height: 1em;
-          content: '';
           background-color: #fff;
           display: block;
           position: absolute;
@@ -280,24 +338,28 @@ div.top {
           right: 0;
           top: -.4em;
         }
+        > span.playProgressSpanPressed {
+          background-color: darken(#fff, 20%);
+        }
       }
     }
     > div.songDuration {
       color: rgba(255, 255, 255, .7);
+      width: 10%;
     }
   }
-  div.controls {
+  div.progressBarAbsolute {
     position: absolute;
-    bottom: 6vh;
-    left: 0;
     width: 100%;
-    height: 3em;
+    top: 80%;
+  }
+  div.controls, div.songMenu {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 0 5%;
     > p {
-      width: 20%;
       margin: 0 auto;
       position: relative;
       display: flex;
@@ -346,9 +408,6 @@ div.top {
         height: 1.5em;
         display: block;
         position: absolute;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
         border-radius: 50%;
         border: 1px solid rgba(200, 200, 200, 0.6);
       }
@@ -379,10 +438,26 @@ div.top {
         content: '\e9bb';
       }
     }
+    > p.likeBtn {
+      &::before {
+        content: '\e9da';
+      }
+    }
+    > p.comments {
+      &::before {
+        content: '\e970';
+      }
+    }
   }
   .playBarListShow-enter, .playBarListShow-leave-to {
     opacity: 0;
     transform: translate3d(0, 100%, 0);
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .3s ease;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0
   }
   @keyframes spin {
     to {
