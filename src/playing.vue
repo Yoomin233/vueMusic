@@ -13,12 +13,13 @@ import Vue from 'vue'
 export default {
   data () {
     return {
-      progressTimer: null
+      progressTimer: null,
     }
   },
   mounted () {
   },
   computed: {
+    audioTag: () => document.querySelector('audio'),
     currentPlaying: () => Store.state.currentPlaying,
     playStatus: () => Store.state.playingStatus.playStatus,
     volume: () => Store.state.playingStatus.volume,
@@ -26,37 +27,35 @@ export default {
   },
   watch: {
     currentPlaying () {
-      let audioTag = document.querySelector('audio')
-      audioTag.load()
+      this.audioTag.load()
       if (this.playStatus === 'playing') {
-        audioTag.play()
+        this.audioTag.play()
       }
     },
     playStatus (val) {
-      let audioTag = document.querySelector('audio')
       let self = this
       if (val === 'playing') {
-        audioTag.volume = 0
+        this.audioTag.volume = 0
         // 开启监听进度
         this.progressTimer = setInterval(() => {
-          Store.commit('updatePlayProgress', audioTag.currentTime)
+          Store.commit('updatePlayProgress', this.audioTag.currentTime)
         }, 1000)
         // 开始播放
-        audioTag.play()
+        this.audioTag.play()
         setTimeout(function inlineFunc () {
-            audioTag.volume += 0.1
-            if (audioTag.volume < self.volume - 0.1) {
+            self.audioTag.volume += 0.1
+            if (self.audioTag.volume < self.volume - 0.1) {
               setTimeout(inlineFunc, 50)
             }
         }, 50)
       } else if (val === 'paused') {
         setTimeout(function inlineFunc () {
-          audioTag.volume -= 0.1
-          if (audioTag.volume > 0.1) {
+          self.audioTag.volume -= 0.1
+          if (self.audioTag.volume > 0.1) {
             setTimeout(inlineFunc, 50)
           } else {
             clearInterval(self.progressTimer)
-            audioTag.pause()
+            self.audioTag.pause()
           }
         }, 50)
       }
@@ -66,6 +65,10 @@ export default {
       if (Math.abs(val - audioTag.currentTime) > 5) {
         audioTag.currentTime = val
       }
+    },
+    volume: (val) => {
+      let audioTag = document.querySelector('audio')
+      audioTag.volume = val
     }
   },
   methods: {

@@ -128,6 +128,9 @@ const Store = new Vuex.Store({
     },
     changeCurrentTime: (state, percentage) => {
       state.playingStatus.currentTime = parseInt(state.playingStatus.duration * (percentage / 100))
+    },
+    changeVolume: (state, volume) => {
+      state.playingStatus.volume = parseFloat((volume / 100).toFixed(1))
     }
   }
 })

@@ -19,21 +19,23 @@
       </div>
     </transition>
     <transition name='fade'>
-      <div @click='switchBack' class="songMenu" v-if='!ifBackShow'>
+      <div class="songMenu" v-if='!ifBackShow'>
         <p class='likeBtn'></p>
         <p class='comments'></p>
       </div>
     </transition>
     <transition name='fade'>
-      <div @click='switchBack' class="back" v-if='ifBackShow'>
-        <p class='volumeCtrl'>
-          <span class='volumeCtrlBar'>
-            <span class='volumeCtrlBtn'></span>
+      <div class="back" v-if='ifBackShow'>
+        <p class='volumeCtrl' @touchstart='volumeBarTouchStart' @touchend='volumeBarTouchEnd' @touchmove='volumeBarDragged'>
+          <span class='volumeCtrlBar' :style='{width:volumePercentage}'>
+            <span class='volumeCtrlBtn' :class='{pressed:ifVolumeBtnPressed}'></span>
           </span>
           <span class='volumeCtrlBg'>
-
           </span>
         </p>
+        <div class="" @click='switchBack' style='height: 30px;'>
+
+        </div>
       </div>
     </transition>
     <div class="progressBar" :class='{progressBarAbsolute:ifBackShow}'>
@@ -75,8 +77,8 @@
         ></play-bar-list>
       </keep-alive>
     </transition>
-    <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
-    </div>
+    <!-- <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
+    </div> -->
   </div>
 </template>
 
@@ -99,27 +101,41 @@ export default {
       ifPlayBarListShow: false,
       ifBackShow: false,
       ifProgressSpanPressed: false,
+      ifVolumeBtnPressed: false,
+      // 用于计算拖动的百分比
+      playBarWidth: null,
+      volumeBarWidth: null,
       touchRecorder: {},
-      playBarWidth: null
     }
   },
   beforeCreate () {
+    // 提前创建好拖动的节流函数
     this.playProgressDragged = throttle((e) => {
       let draggedDistance = e.touches[0].pageX - this.touchRecorder.startX
       let draggedPercentage = draggedDistance / this.playBarWidth
       let currentPercentage = this.touchRecorder.startPercentage + Math.round(draggedPercentage * 100)
       // console.log(currentPercentage)
-      if (0 <= currentPercentage && currentPercentage <= 100)
+      if (0 <= currentPercentage && currentPercentage <= 100) {
         Store.commit('changeCurrentTime', currentPercentage)
+      }
     }, 50)
+    this.volumeBarDragged = throttle((e) => {
+      let draggedDistance = e.touches[0].pageX - this.touchRecorder.startX
+      let draggedPercentage = draggedDistance / this.volumeBarWidth
+      let currentPercentage = this.touchRecorder.startPercentage + Math.round(draggedPercentage * 100)
+      if (0 <= currentPercentage && currentPercentage <= 100) {
+        Store.commit('changeVolume', currentPercentage)
+      }
+    }, 200)
   },
   mounted () {
-    Bus.$on('showPlayingUI', () => {
-      setTimeout(() => {
-        this.ifShowBlurredBg = true,
-        this.blurredBgOpacity = 1
-      }, 1e3)
-    })
+    // Bus.$on('showPlayingUI', () => {
+    //   setTimeout(() => {
+    //     this.ifShowBlurredBg = true,
+    //     this.blurredBgOpacity = 1
+    //   }, 1e3)
+    // })
+    // 隐藏自身
     Bus.$on('hidePlayBarList', () => {
       this.ifPlayBarListShow = false
     })
@@ -144,7 +160,8 @@ export default {
 
     songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
 
-    songPlayProgress: () => `${Math.round((Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100)}%`
+    songPlayProgress: () => `${Math.round((Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100)}%`,
+    volumePercentage: () => (Store.state.playingStatus.volume * 100) + '%'
   },
   methods: {
     switchPlayStatus () {
@@ -169,22 +186,29 @@ export default {
     },
     switchBack () {
       this.ifBackShow = !this.ifBackShow
+      if (this.ifBackShow && !this.volumeBarWidth) {
+        Vue.nextTick(() => {
+          this.volumeBarWidth = parseInt(document.querySelector('div.back > p.volumeCtrl').getBoundingClientRect().width)
+        })
+      }
     },
     playProgressTouchStart (e) {
-      // if (this.playStatus === 'playing') {
-      //   // pause the play while drag progress span
-      //   Store.commit('switchPlayStatus')
-      // }
       this.ifProgressSpanPressed = true
       this.touchRecorder.startX = e.touches[0].pageX
       this.touchRecorder.startPercentage = parseInt(this.songPlayProgress)
     },
     playProgressTouchEnd (e) {
-      // if (this.playStatus === 'paused') {
-      //   // resume the play while finish dragging
-      //   Store.commit('switchPlayStatus')
-      // }
       this.ifProgressSpanPressed = false
+      this.touchRecorder.startX = null
+      this.touchRecorder.startPercentage = null
+    },
+    volumeBarTouchStart (e) {
+      this.ifVolumeBtnPressed = true
+      this.touchRecorder.startX = e.touches[0].pageX
+      this.touchRecorder.startPercentage = parseInt(this.volumePercentage)
+    },
+    volumeBarTouchEnd (e) {
+      this.ifVolumeBtnPressed = false
       this.touchRecorder.startX = null
       this.touchRecorder.startPercentage = null
     }
@@ -355,18 +379,20 @@ div.top {
       }
       > span.volumeCtrlBar {
         background-color: darken(#fff, 30%);
-        width: 50%;
         z-index: 3;
         > span.volumeCtrlBtn {
           display: inline-block;
-          width: .5em;
-          height: .5em;
+          width: .5rem;
+          height: .5rem;
           border-radius: 50%;
           position: absolute;
           right: 0;
           top: 0;
           transform: translateY(-40%) translateX(50%);
           background-color: #fff;
+        }
+        > span.volumeCtrlBtn.pressed {
+          background-color: darken(#fff, 20%);
         }
       }
       > span.volumeCtrlBg {
@@ -401,14 +427,14 @@ div.top {
         background-color: red;
         z-index: 3;
         > span {
-          width: 1em;
-          height: 1em;
+          width: 1rem;
+          height: 1rem;
           background-color: #fff;
           display: block;
           position: absolute;
           border-radius: 50%;
           right: 0;
-          top: -.4em;
+          top: -.4rem;
         }
         > span.playProgressSpanPressed {
           background-color: darken(#fff, 20%);
