@@ -172,7 +172,7 @@ export default {
       Store.commit('togglePlayMode')
     },
     nextSong () {
-      Store.commit('nextSong')
+      Store.dispatch('NEXT_SONG')
     },
     showPlayBarList () {
       this.ifPlayBarListShow = true

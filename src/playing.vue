@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     songEnd () {
-      Store.commit('nextSong')
+      Store.dispatch('NEXT_SONG')
     },
     canPlay (e) {
       // console.log('canplay!')

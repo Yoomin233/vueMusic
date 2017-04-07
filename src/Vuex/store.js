@@ -6,7 +6,7 @@ import config from '../config/config'
 
 const modeList = ['shuffle', 'order', 'single']
 
-import {SWITCH_PLAY_STATUS, CAN_PLAY} from './mutation-types.js'
+import {SWITCH_PLAY_STATUS, CAN_PLAY, NEXT_SONG} from './mutation-types.js'
 
 const Store = new Vuex.Store({
   state: {
@@ -38,50 +38,6 @@ const Store = new Vuex.Store({
       state.playingStatus.buffering = false
       state.playingStatus.duration = duration
     },
-    // '下一首'方法
-    nextSong: state => {
-      let nextSongNum
-      // 顺序播放模式
-      if (state.playingStatus.mode === 'order') {
-        // 如果顺序到最后一首, 则跳转到第一首
-        if (state.playingStatus.songNumber === state.currentPlayingList.length - 1) {
-          nextSongNum = 0
-        // 否则播放下一首
-        } else {
-          nextSongNum = state.playingStatus.songNumber + 1
-        }
-      // 单曲循环模式
-      } else if (state.playingStatus.mode === 'single') {
-        nextSongNum = state.playingStatus.songNumber
-      // 随机播放模式
-      } else if (state.playingStatus.mode === 'shuffle') {
-        nextSongNum = Math.floor(Math.random() * state.currentPlayingList.length)
-      }
-      // 更新当前播放歌曲
-      state.currentPlaying = state.currentPlayingList[nextSongNum]
-      state.currentPlaying.src = `${config.musicServer.url}${state.currentPlaying.filename}`
-      // 更新播放序号
-      state.playingStatus.songNumber = nextSongNum
-      // 推入播放历史
-      if (state.playingStatus.mode !== 'single') {
-        state.recentPlayed.push(nextSongNum)
-      } else {
-        // 单曲循环模式下, 只推入一次
-        if (state.recentPlayed[state.recentPlayed.length - 1] !== nextSongNum) {
-          state.recentPlayed.push(nextSongNum)
-        }
-      }
-      // 开始缓冲
-      state.playingStatus.buffering = true
-      // 缓冲超时
-      setTimeout(() => {
-        if (state.playingStatus.buffering) {
-          alert('缓冲超时, 请重试!')
-        }
-      }, 60 * 1e3)
-      // 重置已播放时间
-      Store.state.playingStatus.currentTime = 0
-    },
     prevSong: (state) => {
 
     },
@@ -91,8 +47,9 @@ const Store = new Vuex.Store({
       // todo: 如果删除当前播放歌曲, 则直接调用nextSong()方法...
     },
     updatePlayList: (state, newList) => state.currentPlayingList = newList,
-    // 直接跳转到歌曲
+    // 跳转到歌曲
     updateCurrentPlaying: (state, songNumber) => {
+      // 更新播放序号
       state.playingStatus.songNumber = songNumber
       state.currentPlaying = {
         src: `${config.musicServer.url}${state.currentPlayingList[songNumber].filename}`,
@@ -100,8 +57,17 @@ const Store = new Vuex.Store({
         singer: state.currentPlayingList[songNumber].singer,
         songName: state.currentPlayingList[songNumber].songName
       }
+      // 推入播放历史
+      if (state.playingStatus.mode !== 'single') {
+        state.recentPlayed.push(songNumber)
+      } else {
+        // 单曲循环模式下, 只推入一次
+        if (state.recentPlayed[state.recentPlayed.length - 1] !== songNumber) {
+          state.recentPlayed.push(songNumber)
+        }
+      }
+      // 开始缓冲
       state.playingStatus.buffering = true
-      state.recentPlayed.push(songNumber)
       setTimeout(() => {
         if (state.playingStatus.buffering) {
           alert('缓冲超时, 请重试!')
@@ -133,6 +99,29 @@ const Store = new Vuex.Store({
   getters: {
     songPlayProgress: (state) => {
       return `${Math.round((state.playingStatus.currentTime/state.playingStatus.duration)*100)}%`
+    }
+  },
+  actions: {
+    // '下一首'方法
+    [NEXT_SONG] ({state, commit}) {
+      let nextSongNum
+      // 顺序播放模式
+      if (state.playingStatus.mode === 'order') {
+        // 如果顺序到最后一首, 则跳转到第一首
+        if (state.playingStatus.songNumber === state.currentPlayingList.length - 1) {
+          nextSongNum = 0
+        // 否则播放下一首
+        } else {
+          nextSongNum = state.playingStatus.songNumber + 1
+        }
+      // 单曲循环模式
+      } else if (state.playingStatus.mode === 'single') {
+        nextSongNum = state.playingStatus.songNumber
+      // 随机播放模式
+      } else if (state.playingStatus.mode === 'shuffle') {
+        nextSongNum = Math.floor(Math.random() * state.currentPlayingList.length)
+      }
+      commit('updateCurrentPlaying', nextSongNum)
     }
   }
 })
