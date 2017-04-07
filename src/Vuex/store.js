@@ -6,6 +6,8 @@ import config from '../config/config'
 
 const modeList = ['shuffle', 'order', 'single']
 
+import {SWITCH_PLAY_STATUS, CAN_PLAY} from './mutation-types.js'
+
 const Store = new Vuex.Store({
   state: {
     placeHolderImg: 'https://vuejs.org/images/logo.png',
@@ -20,16 +22,11 @@ const Store = new Vuex.Store({
     },
     currentPlayingList: [],
     playLists: [],
-    currentPlaying: {
-      src: `${config.musicServer.url}Ariana%20Grande%2CJohn%20Legend%20-%20Beauty%20and%20the%20Beast.mp3`,
-      filename: "Ariana%20Grande%2CJohn%20Legend%20-%20Beauty%20and%20the%20Beast.mp3",
-      singer: 'Ariana%20Grande%2CJohn%20Legend',
-      songName: 'Beauty%20and%20the%20Beast.mp3',
-    },
+    currentPlaying: null,
     recentPlayed:[]
   },
   mutations: {
-    switchPlayStatus: state => {
+    [SWITCH_PLAY_STATUS] (state) {
       if (state.playingStatus.playStatus === 'paused') {
         state.playingStatus.playStatus = 'playing'
       } else if (state.playingStatus.playStatus === 'playing') {
@@ -37,7 +34,7 @@ const Store = new Vuex.Store({
       }
     },
     // 缓冲结束
-    canPlay: (state, duration) => {
+    [CAN_PLAY] (state, {duration}) {
       state.playingStatus.buffering = false
       state.playingStatus.duration = duration
     },
@@ -131,6 +128,11 @@ const Store = new Vuex.Store({
     },
     changeVolume: (state, volume) => {
       state.playingStatus.volume = parseFloat((volume / 100).toFixed(1))
+    }
+  },
+  getters: {
+    songPlayProgress: (state) => {
+      return `${Math.round((state.playingStatus.currentTime/state.playingStatus.duration)*100)}%`
     }
   }
 })

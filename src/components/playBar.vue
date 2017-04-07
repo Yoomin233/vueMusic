@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     switchPlayStatus () {
-      Store.commit('switchPlayStatus')
+      Store.commit('SWITCH_PLAY_STATUS')
     },
     nextSong () {
       Store.commit('nextSong')

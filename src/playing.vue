@@ -8,8 +8,7 @@
 </template>
 <script>
 import config from './config/config'
-import Store from './Vuex/store'
-import Vue from 'vue'
+import {mapState} from 'vuex'
 export default {
   data () {
     return {
@@ -17,14 +16,18 @@ export default {
     }
   },
   mounted () {
+    this.audioTag = document.querySelector('audio')
   },
-  computed: {
-    audioTag: () => document.querySelector('audio'),
-    currentPlaying: () => Store.state.currentPlaying,
-    playStatus: () => Store.state.playingStatus.playStatus,
-    volume: () => Store.state.playingStatus.volume,
-    currentTime: () => Store.state.playingStatus.currentTime
-  },
+  computed: mapState({
+    currentPlaying: 'currentPlaying',
+    playStatus: (state) => state.playingStatus.playStatus,
+    volume: (state) => state.playingStatus.volume,
+    currentTime: (state) => state.playingStatus.currentTime
+  }),
+    // currentPlaying: () => Store.state.currentPlaying,
+    // playStatus: () => Store.state.playingStatus.playStatus,
+    // volume: () => Store.state.playingStatus.volume,
+    // currentTime: () => Store.state.playingStatus.currentTime
   watch: {
     currentPlaying () {
       this.audioTag.load()
@@ -72,13 +75,14 @@ export default {
     }
   },
   methods: {
-
     songEnd () {
       Store.commit('nextSong')
     },
     canPlay (e) {
       // console.log('canplay!')
-      Store.commit('canPlay', Math.round(e.target.duration))
+      Store.commit('CAN_PLAY', {
+        duration: Math.round(e.target.duration)
+      })
     },
     updateSongPlayProgress (e) {
       // console.log(e)

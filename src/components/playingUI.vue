@@ -119,6 +119,7 @@ export default {
         Store.commit('changeCurrentTime', currentPercentage)
       }
     }, 50)
+    // 音量拖动
     this.volumeBarDragged = throttle((e) => {
       let draggedDistance = e.touches[0].pageX - this.touchRecorder.startX
       let draggedPercentage = draggedDistance / this.volumeBarWidth
@@ -160,12 +161,12 @@ export default {
 
     songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
 
-    songPlayProgress: () => `${Math.round((Store.state.playingStatus.currentTime/Store.state.playingStatus.duration)*100)}%`,
+    songPlayProgress: () => Store.getters.songPlayProgress,
     volumePercentage: () => (Store.state.playingStatus.volume * 100) + '%'
   },
   methods: {
     switchPlayStatus () {
-      Store.commit('switchPlayStatus')
+      Store.commit('SWITCH_PLAY_STATUS')
     },
     togglePlayMode () {
       Store.commit('togglePlayMode')

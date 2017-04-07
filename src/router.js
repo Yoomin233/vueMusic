@@ -64,5 +64,5 @@ export default new VueRouter({
         playing
       }
     }
-  ]
+  ],
 })

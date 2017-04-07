@@ -41,7 +41,9 @@ export default {
     songNumber: () => Store.state.playingStatus.songNumber
   },
   watch: {
-
+    songNumber (number) {
+      document.querySelectorAll('div.playBarList > div.songList > p')[number].scrollIntoViewIfNeeded()
+    }
   },
   methods: {
     hidePlayBarList () {
