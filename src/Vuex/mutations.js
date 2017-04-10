@@ -5,6 +5,8 @@ import {
   CAN_PLAY,
 } from './mutation-types.js'
 
+const modeList = ['shuffle', 'order', 'single']
+
 export const mutations = {
   [SWITCH_PLAY_STATUS] (state) {
     if (state.playingStatus.playStatus === 'paused') {

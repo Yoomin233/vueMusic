@@ -5,8 +5,6 @@ Vue.use(Vuex)
 import config from '../config/config'
 import {getAjax} from '../tools/toolsFunction'
 
-const modeList = ['shuffle', 'order', 'single']
-
 import mutations from './mutations'
 
 import {
@@ -61,12 +59,10 @@ const Store = new Vuex.Store({
       }
       commit('updateCurrentPlaying', nextSongNum)
     },
-    [FETCH_DATA] ({commit}) {
-      return getAjax('GET', `${config.musicServer.url}musicList.json`)
-      .then((list) => {
-        commit('updatePlayList', list)
-        commit('updateCurrentPlaying', 0)
-      })
+    async [FETCH_DATA] ({commit}) {
+      let list = await getAjax('GET', `${config.musicServer.url}musicList.json`)
+      commit('updatePlayList', list)
+      commit('updateCurrentPlaying', 0)
     }
   }
 })

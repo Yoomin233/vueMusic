@@ -18,12 +18,14 @@ export default {
   mounted () {
     this.audioTag = document.querySelector('audio')
   },
-  computed: mapState({
-    currentPlaying: 'currentPlaying',
-    playStatus: (state) => state.playingStatus.playStatus,
-    volume: (state) => state.playingStatus.volume,
-    currentTime: (state) => state.playingStatus.currentTime
-  }),
+  computed: {
+    ...mapState({
+      currentPlaying: 'currentPlaying',
+      playStatus: state => state.playingStatus.playStatus,
+      volume: state => state.playingStatus.volume,
+      currentTime: state => state.playingStatus.currentTime
+    })
+  },
     // currentPlaying: () => Store.state.currentPlaying,
     // playStatus: () => Store.state.playingStatus.playStatus,
     // volume: () => Store.state.playingStatus.volume,

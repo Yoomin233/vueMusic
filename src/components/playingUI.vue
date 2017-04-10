@@ -9,36 +9,33 @@
       <span class='share'></span>
     </div>
     <transition name='fade'>
-      <div @click='switchBack' class="needle" :class='{needlePlayed: playStatus === "playing"}' v-if='!ifBackShow'></div>
-    </transition>
-    <transition name='fade'>
-      <div @click='switchBack' class="gramophoneDisc" v-if='!ifBackShow'>
-        <div class="cover" :class='{coverSpin: playStatus === "playing"}'>
-          <img :src="coverImg.match(/url\(([^)]*)\)/)[1]" alt="">
+      <div class="fadeWrapper" @click='switchBack' v-if='!ifBackShow'>
+        <div class="needle" :class='{needlePlayed: playStatus === "playing"}'></div>
+        <div class="gramophoneDisc" >
+          <div class="coverBg" :class='{coverSpin: playStatus === "playing"}'>
+            <div class="cover">
+              <img :src="coverImg.match(/url\(([^)]*)\)/)[1]" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="songMenu">
+          <p class='likeBtn' @click.stop></p>
+          <p class='comments' @click.stop></p>
         </div>
       </div>
     </transition>
     <transition name='fade'>
-      <div class="songMenu" v-if='!ifBackShow'>
-        <p class='likeBtn'></p>
-        <p class='comments'></p>
-      </div>
-    </transition>
-    <transition name='fade'>
-      <div class="back" v-if='ifBackShow'>
-        <p class='volumeCtrl' @touchstart='volumeBarTouchStart' @touchend='volumeBarTouchEnd' @touchmove='volumeBarDragged'>
+      <div class="back" v-if='ifBackShow' @click='switchBack'>
+        <p class='volumeCtrl' @click.stop @touchstart='volumeBarTouchStart' @touchend='volumeBarTouchEnd' @touchmove='volumeBarDragged'>
           <span class='volumeCtrlBar' :style='{width:volumePercentage}'>
             <span class='volumeCtrlBtn' :class='{pressed:ifVolumeBtnPressed}'></span>
           </span>
           <span class='volumeCtrlBg'>
           </span>
         </p>
-        <div class="" @click='switchBack' style='height: 30px;'>
-
-        </div>
       </div>
     </transition>
-    <div class="progressBar" :class='{progressBarAbsolute:ifBackShow}'>
+    <div class="progressBar">
       <div class="playedTime">
         {{songCurrentTime}}
       </div>
@@ -77,6 +74,11 @@
         ></play-bar-list>
       </keep-alive>
     </transition>
+    <transition>
+      <tip>
+        <p>123</p>
+      </tip>
+    </transition>
     <!-- <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
     </div> -->
   </div>
@@ -85,11 +87,12 @@
 <script>
 import Vue from 'vue'
 
-import Store from '../Vuex/store'
+import {mapState, mapGetters} from 'vuex'
 import Bus from '../bus'
 
 
 import playBarList from './playBarList.vue'
+import tip from '../components/tip.vue'
 
 import {formatTime, throttle} from '../tools/toolsFunction'
 
@@ -143,29 +146,32 @@ export default {
     this.playBarWidth = parseInt(getComputedStyle(document.querySelector('div.progressBar > div.mainBar')).width)
   },
   components: {
-    playBarList
+    playBarList,
+    tip
   },
   computed: {
-    coverImg: () => `url(${Store.state.placeHolderImg})`,
-    currentPlaying: () => Store.state.currentPlaying,
-    playStatus: () => {
-      if (Store.state.playingStatus.buffering) {
-        return 'buffering'
-      } else {
-        return Store.state.playingStatus.playStatus
-      }
-    },
-    playMode: () => Store.state.playingStatus.mode,
-
-    songDuration: () => formatTime(Store.state.playingStatus.duration),
-
-    songCurrentTime: () => formatTime(Store.state.playingStatus.currentTime),
-
-    songPlayProgress: () => Store.getters.songPlayProgress,
-    volumePercentage: () => (Store.state.playingStatus.volume * 100) + '%'
+    ...mapGetters([
+      'songPlayProgress'
+    ]),
+    ...mapState({
+      currentPlaying: 'currentPlaying',
+      coverImg: state => `url(${state.placeHolderImg})`,
+      playStatus: (state) => {
+        if (state.playingStatus.buffering) {
+          return 'buffering'
+        } else {
+          return state.playingStatus.playStatus
+        }
+      },
+      playMode: state => state.playingStatus.mode,
+      songDuration: state => formatTime(state.playingStatus.duration),
+      songCurrentTime: state => formatTime(state.playingStatus.currentTime),
+      volumePercentage: state => `${state.playingStatus.volume * 100}%`
+    })
   },
   methods: {
     switchPlayStatus () {
+      // console.log('switching!')
       Store.commit('SWITCH_PLAY_STATUS')
     },
     togglePlayMode () {
@@ -228,7 +234,6 @@ div.top {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 5vh;
   div.songInfo {
     display: flex;
     color: #fff;
@@ -297,6 +302,13 @@ div.top {
     filter: blur(80px) brightness(.4);
     transition: opacity 1s linear;
   }
+  div.fadeWrapper {
+    height: 70%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 10%;
+  }
   div.needle {
     width: 50%;
     height: 20em;
@@ -310,7 +322,7 @@ div.top {
     z-index: 1;
     position: absolute;
     transform: rotate(-.24turn);
-    top: 1em;
+    top: -3em;
   }
   div.needlePlayed {
     transform: rotate(-.2turn);
@@ -320,7 +332,7 @@ div.top {
     padding-top: 100%;
     border-radius: 50%;
     position: relative;
-    div.cover {
+    div.coverBg {
       background: url('../assets/vinyl.png') center / 100% no-repeat;
       position: absolute;
       width: 75%;
@@ -334,9 +346,24 @@ div.top {
       background-size: contain;
       animation: spin 30s linear infinite;
       animation-play-state: paused;
-      img {
-        width: 80%;
-        vertical-align: text-top;
+      div.cover {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 60%;
+        height: 60%;
+        border-radius: 50%;
+        background-color: #fff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img {
+          width: 120%;
+        }
       }
     }
     div.coverSpin {
@@ -410,6 +437,10 @@ div.top {
     padding: 0 1em;
     font-size: .5em;
     height: 10%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 12%;
     > div.playedTime {
       color: rgba(255, 255, 255, .95);
       width: 10%;
@@ -456,13 +487,14 @@ div.top {
       width: 10%;
     }
   }
-  div.progressBarAbsolute {
+  div.controls {
     position: absolute;
-    width: 100%;
-    top: 80%;
+    left: 0;
+    bottom: 2%;
   }
   div.controls, div.songMenu {
     width: 100%;
+    height: 10%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
