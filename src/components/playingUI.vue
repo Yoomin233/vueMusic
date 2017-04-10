@@ -74,11 +74,9 @@
         ></play-bar-list>
       </keep-alive>
     </transition>
-    <transition>
-      <tip>
-        <p>123</p>
-      </tip>
-    </transition>
+    <tip v-show='ifTipShow'>
+      <p>{{tipText}}</p>
+    </tip>
     <!-- <div class="playingUIBg" :style='{"background-image": coverImg, "opacity": blurredBgOpacity}' v-if='ifShowBlurredBg'>
     </div> -->
   </div>
@@ -109,6 +107,8 @@ export default {
       playBarWidth: null,
       volumeBarWidth: null,
       touchRecorder: {},
+      ifTipShow: false,
+      tipText: 'tip text!'
     }
   },
   beforeCreate () {
@@ -176,6 +176,12 @@ export default {
     },
     togglePlayMode () {
       Store.commit('togglePlayMode')
+      this.tipText = this.playMode
+      clearTimeout(this.tipTimer)
+      this.ifTipShow = true
+      this.tipTimer = setTimeout(() => {
+        this.ifTipShow = false
+      }, 1e3)
     },
     nextSong () {
       Store.dispatch('NEXT_SONG')
@@ -435,7 +441,7 @@ div.top {
     justify-content: space-between;
     align-items: center;
     padding: 0 1em;
-    font-size: .5em;
+    font-size: .8em;
     height: 10%;
     width: 100%;
     position: absolute;
@@ -589,16 +595,19 @@ div.top {
       }
     }
   }
+
   .playBarListShow-enter, .playBarListShow-leave-to {
     opacity: 0;
     transform: translate3d(0, 100%, 0);
   }
+
   .fade-enter-active, .fade-leave-active {
     transition: opacity .3s ease;
   }
   .fade-enter, .fade-leave-to {
     opacity: 0
   }
+
   @keyframes spin {
     to {
       transform: rotate(1turn);
