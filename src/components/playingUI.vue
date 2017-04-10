@@ -496,12 +496,12 @@ div.top {
     }
     > p.mode.single {
       &::before {
-        content: '\ea2d';
+        content: '\ea2e';
       }
     }
     > p.mode.order {
       &::before {
-        content: '\ea2e';
+        content: '\ea2d';
       }
     }
     > p.prevSong {

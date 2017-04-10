@@ -3,12 +3,11 @@ import Vue from 'vue'
 import router from './router'
 import store from './Vuex/store'
 
-import fetchInitialInfo from './Vuex/fetchInfo'
-
-fetchInitialInfo.then(() => {
+// fetch initial data
+store.dispatch('FETCH_DATA').then(() => {
   new Vue({
     el: '#app',
     router,
-    store
+    store,
   })
 })

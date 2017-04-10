@@ -1,6 +1,6 @@
-const $ = document.querySelector.bind(document)
-const log = console.log.bind(console)
-const getAjax = function (method, url) {
+export const $ = document.querySelector.bind(document)
+export const log = console.log.bind(console)
+export const getAjax = function (method, url) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest()
     xhr.open(method, url, true)
@@ -12,12 +12,12 @@ const getAjax = function (method, url) {
     xhr.send()
   })
 }
-const formatTime = (duration) => {
+export const formatTime = (duration) => {
   let seconds = duration % 60
   let minutes = (duration - seconds) / 60
   return `${minutes > 9 ? minutes : '0' + minutes}:${seconds > 9 ? seconds : '0' + seconds}`
 }
-const throttle = (fn, interval) => {
+export const throttle = (fn, interval) => {
   let start = Date.now()
   return (...rest) => {
     if (Date.now() - start >= interval) {
@@ -25,11 +25,4 @@ const throttle = (fn, interval) => {
       fn(...rest)
     }
   }
-}
-export {
-  $,
-  log,
-  getAjax,
-  formatTime,
-  throttle
 }
