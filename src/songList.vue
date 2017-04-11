@@ -1,7 +1,7 @@
 <template lang="html">
-  <div class="top">
+  <div class="top" @scroll='listScroll'>
     <div class="listInfo">
-      <router-link to='/main' tag='p'>歌单</router-link>
+      <router-link to='/main' tag='p' class='backBar' :class='{fixed:backBarFixed}' :style='backBarBg'>歌单</router-link>
       <img src="https://vuejs.org/images/logo.png" alt="">
       <div class="listName">
         <p>我喜欢的音乐</p>
@@ -12,7 +12,7 @@
         <span>评论</span>
         <span>分享</span>
       </p>
-      <div class="listInfoBg"></div>
+      <div class="listInfoBg" :style='infoBgObj'></div>
     </div>
     <div class="songList">
       <p>
@@ -42,11 +42,50 @@
 import {mapState, mapMutations} from 'vuex'
 import Store from './Vuex/store'
 
+import {throttle, debounce} from './tools/toolsFunction'
+
 export default {
+  data () {
+    return {
+      backBarFixed: false,
+      listScrolled: null,
+      listInfoHeight: null,
+    }
+  },
+  mounted () {
+    this.listInfoHeight = parseInt(getComputedStyle(document.querySelector('div.listInfo')).height)
+  },
   components: {
 
   },
+  beforeCreate () {
+    this.listScroll = throttle((e) => {
+      debounce((e) => {
+        this.listScrolled = e.target.scrollTop
+        if (this.listScrolled > 0 ) {
+          this.backBarFixed = true
+        } else {
+          this.backBarFixed = false
+        }
+      }, 100)(e)
+    }, 100)
+    this.infoBgObj = {
+      'background-color': 'rgba(100, 100, 100, 1)'
+    }
+  },
   computed: {
+    backBarBg () {
+      let transPercent = this.listScrolled / this.listInfoHeight
+      if (transPercent <= 1) {
+        return {
+          'background-color': this.infoBgObj['background-color'].replace(/1\)/, `${transPercent})`)
+        }
+      } else {
+        return {
+          'background-color': this.infoBgObj['background-color']
+        }
+      }
+    },
     ...mapState({
       songList: state => state.currentPlayingList,
       avator: state => state.user.avator,
@@ -56,7 +95,7 @@ export default {
   methods: {
     jumpToSong (index) {
       Store.commit('updateCurrentPlaying', index)
-    }
+    },
   }
 }
 </script>
@@ -76,18 +115,27 @@ export default {
     div.listInfo {
       padding: 1em;
       color: #fff;
-      > p:first-of-type {
+      padding-top: 3em;
+      > p.backBar {
         margin: 0 auto;
-        margin-bottom: .5em;
+        padding: .5em;
         color: #fff;
-        line-height: 1.5em;
         font-size: 1.2em;
+        position: absolute;
+        left:0;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+        transition: background .1s ease;
         &::before {
           font-family: 'icomoon' !important;
           content: '\ea40';
           vertical-align: top;
           margin-right: .5ch;
         }
+      }
+      > p.backBar.fixed {
+        position: fixed;
       }
       > img {
         width: 8em;
@@ -139,7 +187,6 @@ export default {
         // background-image: url('https://vuejs.org/images/logo.png');
         background-size: cover;
         background-repeat: no-repeat;
-        background-color: #666;
         z-index: 0;
         position: absolute;
         left: 0;

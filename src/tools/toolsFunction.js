@@ -26,3 +26,12 @@ export const throttle = (fn, interval) => {
     }
   }
 }
+let debounceTimer = null
+export const debounce = (fn, delay) => {
+  return (...rest) => {
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => {
+      fn(...rest)
+    }, delay)
+  }
+}
