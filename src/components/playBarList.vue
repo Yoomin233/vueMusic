@@ -42,7 +42,7 @@ export default {
   },
   watch: {
     songNumber (number) {
-      document.querySelectorAll('div.playBarList > div.songList > p')[number].scrollIntoViewIfNeeded()
+      document.querySelectorAll('div.playBarList > div.songList > p')[number]&&document.querySelectorAll('div.playBarList > div.songList > p')[number].scrollIntoViewIfNeeded()
     }
   },
   methods: {
