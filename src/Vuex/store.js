@@ -27,7 +27,11 @@ const Store = new Vuex.Store({
     currentPlayingList: [],
     playLists: [],
     currentPlaying: null,
-    recentPlayed:[]
+    recentPlayed:[],
+    user: {
+      name: 'H.ymin',
+      avator: 'http://placekitten.com.s3.amazonaws.com/homepage-samples/408/287.jpg'
+    }
   },
   mutations,
   // getter are like store's built-in filters
