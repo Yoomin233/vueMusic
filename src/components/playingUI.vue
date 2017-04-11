@@ -181,7 +181,7 @@ export default {
       this.ifTipShow = true
       this.tipTimer = setTimeout(() => {
         this.ifTipShow = false
-      }, 1e3)
+      }, 1.5 * 1e3)
     },
     nextSong () {
       Store.dispatch('NEXT_SONG')
@@ -352,6 +352,7 @@ div.top {
       background-size: contain;
       animation: spin 30s linear infinite;
       animation-play-state: paused;
+      filter:drop-shadow(0px 0px 1em rgba(255, 255, 255, 0.8));
       div.cover {
         position: absolute;
         left: 0;

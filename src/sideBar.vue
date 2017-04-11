@@ -5,7 +5,7 @@
       <div class="avator">
 
       </div>
-      <p class='userInfo'>Hymin</p>
+      <p class='userInfo'>{{userName}}</p>
     </div>
     <p>设置</p>
     <p>定时停止播放</p>
@@ -13,8 +13,14 @@
 </template>
 <script>
 import Router from './router'
+import {mapState} from 'vuex'
 export default {
   mounted () {
+  },
+  computed: {
+    ...mapState({
+      userName: state => state.user.name
+    })
   }
 }
 </script>
