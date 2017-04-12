@@ -141,3 +141,14 @@ export default {
     transform: translate3d(-100%, 0, 0);
   }
 </style>
+<style>
+@font-face {
+  font-family: 'icomoon';
+  src:  url('./assets/icomoon.eot');
+  src:  url('./assets/icomoon.eot') format('embedded-opentype'),
+    url('./assets/icomoon.ttf') format('truetype'),
+    url('./assets/icomoon.woff') format('woff'),
+    url('./assets/icomoon.svg') format('svg');
+  font-style: normal;
+}
+</style>

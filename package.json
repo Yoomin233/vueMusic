@@ -7,7 +7,7 @@
   "scripts": {
     "localDev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --host 0.0.0.0",
     "serverDev": "cross-env NODE_ENV=server webpack-dev-server --inline --hot --host 0.0.0.0",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=server webpack --progress --hide-modules"
   },
   "dependencies": {
     "vue": "^2.1.0",

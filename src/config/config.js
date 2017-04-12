@@ -7,7 +7,9 @@ const config = {
     }
   },
   server: {
-    url: 'http://121.196.198.168:10020/'
+    musicServer: {
+      url: 'http://121.196.198.168:10020/'
+    }
   }
 }
 export default config[devEnv]

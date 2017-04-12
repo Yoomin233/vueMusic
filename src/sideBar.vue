@@ -44,7 +44,7 @@ div.top {
   }
   div.personArea {
     height: 30%;
-    background-image: url('assets/rain.jpeg');
+    background-image: url('./assets/rain.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
     padding: 20% 5% 5%;
