@@ -15,6 +15,7 @@ import {
 const Store = new Vuex.Store({
   state: {
     placeHolderImg: 'https://vuejs.org/images/logo.png',
+    currentPlaying: null,
     playingStatus: {
       playStatus: 'paused',
       volume: 1,
@@ -24,9 +25,8 @@ const Store = new Vuex.Store({
       duration: 0,
       buffering: true
     },
-    currentPlayingList: [],
+    currentPlayingList: null,
     playLists: [],
-    currentPlaying: null,
     recentPlayed:[],
     user: {
       name: 'H.ymin',
@@ -48,7 +48,7 @@ const Store = new Vuex.Store({
       // 顺序播放模式
       if (state.playingStatus.mode === 'order') {
         // 如果顺序到最后一首, 则跳转到第一首
-        if (state.playingStatus.songNumber === state.currentPlayingList.length - 1) {
+        if (state.playingStatus.songNumber === state.currentPlayingList.songs.length - 1) {
           nextSongNum = 0
         // 否则播放下一首
         } else {
@@ -59,7 +59,7 @@ const Store = new Vuex.Store({
         nextSongNum = state.playingStatus.songNumber
       // 随机播放模式
       } else if (state.playingStatus.mode === 'shuffle') {
-        nextSongNum = Math.floor(Math.random() * state.currentPlayingList.length)
+        nextSongNum = Math.floor(Math.random() * state.currentPlayingList.songs.length)
       }
       commit('updateCurrentPlaying', nextSongNum)
     },

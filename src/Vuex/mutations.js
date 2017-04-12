@@ -25,7 +25,7 @@ export const mutations = {
   },
   // 删除当前歌单歌曲
   removeSong: (state, index) => {
-    state.currentPlayingList.splice(index, 1)
+    state.currentPlayingList.songs.splice(index, 1)
     // todo: 如果删除当前播放歌曲, 则直接调用nextSong()方法...
   },
   updatePlayList: (state, newList) => state.currentPlayingList = newList,
@@ -34,10 +34,10 @@ export const mutations = {
     // 更新播放序号
     state.playingStatus.songNumber = songNumber
     state.currentPlaying = {
-      src: `${config.musicServer.url}${state.currentPlayingList[songNumber].filename}`,
-      filename: state.currentPlayingList[songNumber].filename,
-      singer: state.currentPlayingList[songNumber].singer,
-      songName: state.currentPlayingList[songNumber].songName
+      src: `${config.musicServer.url}${state.currentPlayingList.songs[songNumber].filename}`,
+      filename: state.currentPlayingList.songs[songNumber].filename,
+      singer: state.currentPlayingList.songs[songNumber].singer,
+      songName: state.currentPlayingList.songs[songNumber].songName
     }
     // 推入播放历史
     if (state.playingStatus.mode !== 'single') {

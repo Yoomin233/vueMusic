@@ -4,7 +4,7 @@
     <p @click='togglePlayMode' :class='playModeClass'><span>{{playModeText}}({{songList.length}})</span><span>清空</span></p>
     <div class="songList">
       <p
-        v-for='(song, index) in songList'
+        v-for='(song, index) in songList.songs'
         :class='{nowPlaying: index === songNumber}'
       >
       <span @click='jumpToSong(index)'>{{decodeURIComponent(song.songName).replace('.mp3', '')}} - </span>

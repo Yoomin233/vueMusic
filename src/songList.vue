@@ -1,11 +1,11 @@
 <template lang="html">
   <div class="top" @scroll='listScroll'>
     <div class="listInfo">
-      <router-link to='/main' tag='p' class='backBar' :class='{fixed:backBarFixed}' :style='backBarBg'>歌单</router-link>
+      <router-link to='/main' tag='p' class='backBar' :class='{fixed:backBarFixed}' :style='backBarBg'>{{listScrolled < 100 ? '歌单' : songList.meta.name}}</router-link>
       <img src="https://vuejs.org/images/logo.png" alt="">
       <div class="listName">
-        <p>我喜欢的音乐</p>
-        <p><img :src='avator' alt="">{{userName}} > </p>
+        <p>{{songList.meta.name}}</p>
+        <p><img :src='avator' alt="">{{songList.meta.owner}} > </p>
       </div>
       <p class='songListMenu'>
         <span>收藏</span>
@@ -18,11 +18,11 @@
       <p>
         <span></span>
         <span>播放全部
-          <i>(共{{songList.length}}首)</i>
+          <i>(共{{songList.songs.length}}首)</i>
         </span>
         <span>多选</span>
       </p>
-      <div class="listItem" v-for='(item, index) in songList' @click='jumpToSong(index)'>
+      <div class="listItem" v-for='(item, index) in songList.songs' @click='jumpToSong(index)'>
         <span class="no">
           {{index + 1}}
         </span>
@@ -30,11 +30,12 @@
           <p>{{decodeURIComponent(item.songName)}}</p>
           <p>{{decodeURIComponent(item.singer)}}</p>
         </div>
-        <span class='songMore'>
+        <span class='songMore' @click.stop='showSongInfo(index)'>
           ...
         </span>
       </div>
     </div>
+    <song-menu :songInfo='songInfo' v-if='songMenuShowed'></song-menu>
   </div>
 </template>
 
@@ -44,19 +45,26 @@ import Store from './Vuex/store'
 
 import {throttle, debounce} from './tools/toolsFunction'
 
+import songMenu from './components/songMenu.vue'
+
+import bus from './bus'
+
 export default {
   data () {
     return {
       backBarFixed: false,
       listScrolled: null,
       listInfoHeight: null,
+      songMenuShowed: false,
+      songInfo: null
     }
   },
   mounted () {
     this.listInfoHeight = parseInt(getComputedStyle(document.querySelector('div.listInfo')).height)
+    bus.$on('hideSongMenu', () => this.songMenuShowed = false)
   },
   components: {
-
+    songMenu
   },
   beforeCreate () {
     this.listScroll = throttle((e) => {
@@ -96,6 +104,10 @@ export default {
     jumpToSong (index) {
       Store.commit('updateCurrentPlaying', index)
     },
+    showSongInfo (index) {
+      this.songInfo = this.songList.songs[index]
+      this.songMenuShowed = true
+    }
   }
 }
 </script>

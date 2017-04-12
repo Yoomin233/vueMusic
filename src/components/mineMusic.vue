@@ -12,7 +12,7 @@
         </div>
         <div class="musicListDetails">
           <router-link to='/main/songList' tag='p'>我喜欢的音乐</router-link>
-          <p>{{songList.length}}首</p>
+          <p>{{songList.songs.length}}首</p>
         </div>
       </div>
     </div>
