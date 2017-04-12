@@ -7,7 +7,8 @@
   "scripts": {
     "localDev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --host 0.0.0.0",
     "serverDev": "cross-env NODE_ENV=server webpack-dev-server --inline --hot --host 0.0.0.0",
-    "build": "cross-env NODE_ENV=server webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=server webpack --progress --hide-modules",
+    "upload": "npm run build && scp -r ./dist/*.* root@121.196.198.168:/usr/projects/vueMusic "
   },
   "dependencies": {
     "vue": "^2.1.0",
