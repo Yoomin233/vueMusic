@@ -5,7 +5,8 @@
   "author": "Yuemin.Hu <yuemin.hu@baidao.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --host 0.0.0.0",
+    "localDev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --host 0.0.0.0",
+    "serverDev": "cross-env NODE_ENV=server webpack-dev-server --inline --hot --host 0.0.0.0",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
