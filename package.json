@@ -6,11 +6,11 @@
   "private": true,
   "scripts": {
     "localDev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --host 0.0.0.0",
-    "serverDev": "cross-env NODE_ENV=server webpack-dev-server --inline --hot --host 0.0.0.0",
     "build": "cross-env NODE_ENV=server webpack --progress --hide-modules",
     "upload": "npm run build && scp -r ./dist/*.* root@121.196.198.168:/usr/projects/vueMusic "
   },
   "dependencies": {
+    "express": "^4.15.2",
     "vue": "^2.1.0",
     "vue-router": "^2.3.0",
     "vuex": "^2.2.1"

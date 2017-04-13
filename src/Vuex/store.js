@@ -9,7 +9,8 @@ import mutations from './mutations'
 
 import {
   NEXT_SONG,
-  FETCH_DATA
+  FETCH_DATA,
+  SWITCH_USER_TO_MAY
 } from './mutation-types.js'
 
 const Store = new Vuex.Store({
@@ -63,10 +64,17 @@ const Store = new Vuex.Store({
       }
       commit('updateCurrentPlaying', nextSongNum)
     },
-    async [FETCH_DATA] ({commit}) {
-      let list = await getAjax('GET', `${config.musicServer.url}musicList.json`)
+    async [FETCH_DATA] ({commit}, listAddr) {
+      let list = await getAjax('GET', listAddr)
       commit('updatePlayList', list)
       commit('updateCurrentPlaying', 0)
+    },
+    [SWITCH_USER_TO_MAY] ({commit, dispatch}) {
+      commit('changeUser', {
+        name: 'May',
+        avator: 'http://placekitten.com.s3.amazonaws.com/homepage-samples/200/139.jpg'
+      })
+      dispatch('FETCH_DATA', `${config.musicServer.url}maysList.json`)
     }
   }
 })

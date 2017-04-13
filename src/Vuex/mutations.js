@@ -76,6 +76,9 @@ export const mutations = {
   },
   changeVolume: (state, volume) => {
     state.playingStatus.volume = parseFloat((volume / 100).toFixed(1))
+  },
+  changeUser: (state, newUser) => {
+    state.user = newUser
   }
 }
 

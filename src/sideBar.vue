@@ -2,26 +2,64 @@
   <div class="top">
     <router-link tag='div' class='shade' to='/main'></router-link>
     <div class="personArea">
-      <div class="avator">
-
+      <div class="avator" @click='showTip' :style='{"background-image": `url(${user.avator})`}'>
       </div>
-      <p class='userInfo'>{{userName}}</p>
+      <p class='userInfo'>{{user.name}}</p>
     </div>
     <p>设置</p>
     <p>定时停止播放</p>
+    <tip v-show='ifTipShow'>
+      <p>再按{{tapRequired}}下!</p>
+    </tip>
   </div>
 </template>
 <script>
 import Router from './router'
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
+// import Store from ''
+
+import Bus from './bus'
+
+import tip from './components/tip.vue'
+
 export default {
+  data () {
+    return {
+      ifTipShow: false,
+      tapRequired: 3,
+    }
+  },
   mounted () {
   },
   computed: {
     ...mapState({
-      userName: state => state.user.name
+      user: 'user'
     })
-  }
+  },
+  components: {
+    tip
+  },
+  methods: {
+    showTip () {
+      if (!this.tapRequired) {
+        return
+      }
+      this.tapRequired --
+      if (this.tapRequired === 0) {
+        console.log('switching!')
+        this.switchUser()
+        return
+      }
+      clearTimeout(this.tipTimer)
+      this.ifTipShow = true
+      this.tipTimer = setTimeout(() => {
+        this.ifTipShow = false
+      }, 1.5 * 1e3)
+    },
+    ...mapActions({
+      switchUser: 'SWITCH_USER_TO_MAY'
+    })
+  },
 }
 </script>
 <style lang='less' scoped>
@@ -52,10 +90,11 @@ div.top {
     font-size: 1.2em;
     div.avator {
       background-color: white;
+      background-size: cover;
       width: 4em;
       height: 4em;
       border-radius: 50%;
-      background: url('http://placekitten.com.s3.amazonaws.com/homepage-samples/408/287.jpg') center / cover;
+      overflow: hidden;
     }
     div.avator + p {
       margin: .5em auto;
